@@ -18,17 +18,19 @@ class Learn extends Component {
         this.state = {
             error: null,
             isLoaded: false,
-            data: []         
+            data: {}        
         }
         this.list = React.createRef();
+        
     }
-    componentDidMount() {
+    componentDidMount() {        
+        const { match } = this.props;
         const strLearn = localStorageUtility.get(config.localStorage.learn);
         if (strLearn) {
             const learn = JSON.parse(strLearn);
-            if (learn.words && learn.words.length) {
+            if (learn[match.params.id]) {
                 this.setState({
-                    data: learn.words,
+                    data: learn[match.params.id],
                     isLoaded: true
                 })
             }
@@ -37,11 +39,30 @@ class Learn extends Component {
 
     callShuffle() {
         this.list.current.shuffle();
-        //alert("hell")
+        //console.log(this.list);
+        //alert("a");
     }
+
+    callSave() {
+        this.list.current.save();
+    }
+
+    callNext() {
+        this.list.current.next();
+    }
+
+    callChangeState(stateNumber) {
+        //this.state.data.state = state;
+        this.setState(state => {
+            state.data.state = stateNumber;
+            return state;
+        })
+    }
+
 
     render() {
         const {error, isLoaded, data} = this.state;
+
         if (error) {
             return <section class="flex-center color-red">Error: {error.message}</section>;
         }
@@ -50,8 +71,8 @@ class Learn extends Component {
         } else {
             return (
                 <div>
-                    <NavControl onClickSuffle={this.callShuffle.bind(this)} />
-                    <List ref={this.list} data={data} />
+                    <NavControl onClickShuffle={this.callShuffle.bind(this)} onClickSave={this.callSave.bind(this)} onClickNext={this.callNext.bind(this)} state={this.state.data.state}/>
+                    <List ref={this.list} data={data} onClickChangeState={this.callChangeState.bind(this)}/>
                 </div>
             );
         }        

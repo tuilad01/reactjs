@@ -1,17 +1,12 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import { Redirect } from 'react-router-dom';
+// import PropTypes from 'prop-types';
+
 
 // Config
 import localStorageUtility from '../localStorageUtility';
 import config from './../config';
 
 // import component 
-import Nav from '../nav/nav';
-import NavControl from '../nav-control/nav-control';
-import List from '../list/list';
-import NavMenu from '../menu/menu';
-import Footer from '../footer/footer';
 import SpinnerLoading from '../spinner-loading/spinner-loading';
 
 class Dashboard extends Component {
@@ -22,28 +17,52 @@ class Dashboard extends Component {
             isLoaded: false,
             groups: []
         };
+        this.learnLocal = this.getLearnLocal();
+        this.wordLocal = this.getWordLocal();
+        this.groupLocal = this.getGroupLocal();
+        this.numberWordRemember = this.getNumberWordRemember.call(this);
+        this.percentProgressBar = Math.round((this.numberWordRemember * 100) / this.wordLocal.length);
+
+
     }
+
     componentWillMount() {
         this.clickTimeout = null;
     }
 
     componentDidMount() {
-        fetch("https://wordgroup123.herokuapp.com/group")
-            .then(res => res.json())
-            .then(
-                (result) => {
-                    this.setState({
-                        isLoaded: true,
-                        groups: result
-                    });
-                },
-                (error) => {
-                    this.setState({
-                        isLoaded: true,
-                        error
-                    });
-                }
-            );
+        const groups = localStorageUtility.getArray(config.localStorage.groups);
+        this.setState({
+            isLoaded: true,
+            groups: groups
+        });
+    }
+
+    getLearnLocal() {
+        let learnLocal = {};
+        const strLearnLocal = localStorageUtility.get(config.localStorage.learn);
+        if (strLearnLocal) {
+            learnLocal = JSON.parse(strLearnLocal);            
+        }
+        return learnLocal;
+    }
+
+    getWordLocal() {
+        return localStorageUtility.getArray(config.localStorage.words);
+    }
+    getGroupLocal() {
+        return localStorageUtility.getArray(config.localStorage.groups);
+    }
+
+    getNumberWordRemember() {
+        let number = 0;
+        for (const key in this.learnLocal) {
+            if (this.learnLocal.hasOwnProperty(key)) {
+                const element = this.learnLocal[key];
+                number += element.state3.length
+            }
+        }
+        return number;
     }
 
     handleTouch(group) {
@@ -63,14 +82,31 @@ class Dashboard extends Component {
     }
 
     singleTouch() {
-
     }
 
     doubleTouch(group) {
-        localStorageUtility.set(config.localStorage.learn, group);
+        this.setLocalLearn(group);
         this.props.history.push({
             pathname: `/learn/${group._id}`
         })
+    }
+
+    setLocalLearn(group) {
+        if (!this.learnLocal[group._id]) {
+            this.learnLocal[group._id] = this.prepareSetLearnLocal(group);
+        }
+
+        localStorageUtility.set(config.localStorage.learn, this.learnLocal);
+    }
+
+    prepareSetLearnLocal(group) {
+        group.state = 1;
+        group.state1 = group.words || [];
+        group.state2 = [];
+        group.state3 = [];
+        group.percent = 1;
+        group.lastLearnAt = Date.now();
+        return group;
     }
 
     render() {
@@ -87,39 +123,36 @@ class Dashboard extends Component {
                         <main>
                             <div className="box-container">
                                 <div className="box">
-                                    <p>2000</p>
+                                    <p>{this.wordLocal.length}</p>
                                     <p>words</p>
                                 </div>
                                 <div className="box">
-                                    <p>200</p>
+                                    <p>{this.groupLocal.length}</p>
                                     <p>groups</p>
                                 </div>
                                 <div className="box">
-                                    <span>23</span>
+                                    <span>0</span>
                                     <p>Week word</p>
                                 </div>
                                 <div className="box">
-                                    <span>3</span>
+                                    <span>0</span>
                                     <p>Week group</p>
                                 </div>
                                 <div className="box">
-                                    <span>10</span>
+                                    <span>0</span>
                                     <p>Day word</p>
                                 </div>
                                 <div className="box">
-                                    <span>2</span>
+                                    <span>0</span>
                                     <p>Day group</p>
                                 </div>
                             </div>
                             <div>
                                 <div className="number-progress-bar">
-                                    <span>223/1000</span>
-                                    <i className="material-icons">
-                                        star_rate
-                            </i>
+                                    <span>{`${this.numberWordRemember}/${this.wordLocal.length}`}</span>
                                 </div>
                                 <div className="progress-bar margin-center">
-                                    <div style={{ width: "20%" }}>
+                                    <div style={{ width: `${this.percentProgressBar}%` }}>
                                         <div></div>
                                     </div>
                                 </div>
@@ -130,19 +163,25 @@ class Dashboard extends Component {
                     <section>
                         <main>
                             <ul className="list">
-                                {this.state.groups.map(group => {
+                                {this.state.groups.map((group, index) => {
+                                    const _group = this.learnLocal[group._id];
+                                    let percent = 1;
+                                    if (_group) {
+                                        percent = _group.percent > 0 ? _group.percent : 1;
+                                    }
+
                                     return (
-                                        <li onClick={this.handleTouch.bind(this, group)}>
+                                        <li onClick={this.handleTouch.bind(this, group)} key={index}>
                                             <div>
-                                                <span>40</span>
+                                                <span>{group.words.length || 0}</span>
                                             </div>
                                             <div className="detail">
                                                 <p>{group.name}</p>
                                                 <p>{group.description}</p>
                                             </div>
                                             <div className="margin-center">
-                                                <div className="c100 p85 blue">
-                                                    <span>85%</span>
+                                                <div className={`c100 p${percent} blue`}>
+                                                    <span>{percent}%</span>
                                                     <div className="slice">
                                                         <div className="bar"></div>
                                                         <div className="fill"></div>
@@ -163,8 +202,8 @@ class Dashboard extends Component {
     }
 }
 
-Dashboard.propTypes = {
+// Dashboard.propTypes = {
 
-};
+// };
 
 export default Dashboard;

@@ -5,9 +5,12 @@
  * @param {*} array2 
  * @param {*} property 
  */
-function mergeArray(array1, array2, property) {
+const mergeArray = (array1, array2, property) => {
     try {
-        return array1.concat(array2.filter(obj2 => array1.find(obj1 => obj1[property] === obj2[property])));
+        if(array1.length <= 0) return array2;
+        if(array2.length <= 0) return array1;
+
+        return array1.concat(array2.filter(obj2 => !array1.find(obj1 => obj1[property] === obj2[property])));
     } catch (error) {
         console.error(error);
         return [];
@@ -82,7 +85,7 @@ const splitArray = (array, property, value) => {
  */
 const splitByArray = (array1, array2, property1, value1, property2) => {
     try {
-        return array1.filter(obj1 => obj1[property1] === value1 && array2.find(obj2 => obj2[property2] === obj1));
+        return array1.filter(obj1 => obj1[property1] === value1 && array2.find(obj2 => obj2[property2] === obj1[property2]));
     } catch (error) {
         console.error(error);
         return [];
