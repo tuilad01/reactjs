@@ -1,18 +1,38 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
+// import PropTypes from 'prop-types';
+
 import './menu.css';
+import { withRouter } from 'react-router-dom';
+
+import localStorageUtility from "../localStorageUtility";
+import config from "../config";
 
 class Menu extends Component {
+    constructor(props) {
+        super(props);
+        
+    }
+    
+
+    clearCache(event) {
+        event.preventDefault();
+        localStorageUtility.remove(config.localStorage.groups);
+        localStorageUtility.remove(config.localStorage.words);
+        window.location.reload();
+    }
+
+
     render() {
         return (
-            <section className="full-menu hidden">
+            <section className="full-menu">
                 <main className="container">
                     <div className="split-horizon">
-                        <a href="#" className="title-menu">voluptate repreh</a>
+                        <a href="#" className="title-menu">Menu panel</a>
                     </div>
                     <ul>
-                        <li><a href="#">Word</a></li>
-                        <li><a href="#">Group</a></li>
+                        <li><a href="https://tuilad01.github.io/#/word">Word</a></li>
+                        <li><a href="https://tuilad01.github.io/#/group">Group</a></li>
+                        <li><a href="#" onClick={e => this.clearCache(e)}>Clear cache</a></li>
                     </ul>
                 </main>
             </section>
@@ -20,8 +40,8 @@ class Menu extends Component {
     }
 }
 
-Menu.propTypes = {
+// Menu.propTypes = {
 
-};
+// };
 
-export default Menu;
+export default withRouter(Menu);

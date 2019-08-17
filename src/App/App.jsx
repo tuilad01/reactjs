@@ -27,7 +27,8 @@ class App extends Component {
       wordFetch: {
         error: null,
         isLoaded: false,
-      }
+      },
+      isShowMenu: false
     };
   }
 
@@ -95,9 +96,14 @@ class App extends Component {
 
 
 
-  callShuffle() {
-    //list.current.shuffle();
+  callOpenMenu() {
+    this.setState(state => {
+      state.isShowMenu = !state.isShowMenu;
+      return state;
+    })    
   }
+
+
 
   render() {
     const { groupFetch, wordFetch } = this.state;
@@ -123,13 +129,13 @@ class App extends Component {
       return (
         <Router>
           <div>
-            <Nav />
+            <Nav onClickShowMenu={this.callOpenMenu.bind(this)} />
             <Switch>
               <Route exact path="/" component={Dashboard} />
               <Route exact path="/learn/:id" component={Learn} />
               <Route component={Notfound} />
             </Switch>
-            <NavMenu />
+            {this.state.isShowMenu ? <NavMenu /> : ""}
             <Footer />
           </div>
         </Router>

@@ -17,7 +17,6 @@ class List extends Component {
         data.state3;
 
     this.state = {
-      _id: data._id,
       state: data.state,
       state1: data.state1,
       state2: data.state2,
@@ -79,12 +78,13 @@ class List extends Component {
   }
 
   shuffle() {
+    this.gFlip = !this.gFlip;
     this.setState(state => {
       state.data = this.shuffleArray(state.data);
-      // state.data.map(word => {
-      //   word.display = true;
-      //   return word;
-      // });
+      state.data.map(_ => {
+        _.flipped = this.gFlip;
+        return _;
+      })
       return state.data;
     });
   }
@@ -100,18 +100,18 @@ class List extends Component {
     return array;
   }
 
-  save() {
-    debugger    
-    const { _id, state, state1, state2, state3 } = this.state;
+  save() { 
+    const { state, state1, state2, state3 } = this.state;
     const strLearnLocal = localStorageUtility.get(config.localStorage.learn);
     if (strLearnLocal) {
       const learnLocal = JSON.parse(strLearnLocal);
-      const group = learnLocal[_id];
+      const group = learnLocal[this.props.data._id];
       group.state = state;
       group.state1 = state1;
       group.state2 = state2;
       group.state3 = state3;
-      group.percent = Math.round((state3 * 100) / group.word.length);      
+      group.percent = Math.round((state3.length * 100) / group.words.length);   
+      localStorageUtility.set(config.localStorage.learn, learnLocal);
     }
   }
 
@@ -122,9 +122,9 @@ class List extends Component {
 
     switch (state) {
       case 1:
-        state2 = mergeArray(splitByArray(data, state1, propDisplay, false, propId), state2, propId);
-        state1 = data.filter(_ => _.display);
-        data = mergeArray(state1, state2, propId).map(_ => {
+        state1 = [...data.filter(_ => _.display)];
+        state2 = [...data.filter(_ => !_.display), ...state2];
+        data = [... state1, ...state2].map(_ => {
           _.display = true;
           _.flipped = this.gFlip;
           return _;
@@ -133,9 +133,9 @@ class List extends Component {
         break;
 
       case 2:
-        state1 = data.filter(_ => _.display);
-        state2 = data.filter(_ => !_.display);
-        data = mergeArray(mergeArray(state1, state3, propId), state2, propId).map(_ => {
+        state1 = [...data.filter(_ => _.display)];
+        state2 = [...data.filter(_ => !_.display)];
+        data = [...state1, ...state2, ...state3].map(_ => {
           _.display = true;
           _.flipped = this.gFlip;
           return _;
@@ -144,9 +144,11 @@ class List extends Component {
         break;
 
       case 3:
-        state3 = mergeArray(splitByArray(data, state2, propDisplay, false, propId), splitByArray(data, state3, propDisplay, false, propId));
-        state2 = splitByArray(data, state1, propDisplay, false, propId);
-        state1 = data.filter(_ => _.display);
+        const remember = data.filter(_ => !_.display);
+        
+        state3 = [...remember.filter(rem => state2.find(sta2 => sta2._id === rem._id) || state3.find(sta3 => sta3._id === rem._id))];
+        state2 = [...remember.filter(rem => state1.find(sta1 => sta1._id === rem._id))];
+        state1 = [...data.filter(_ => _.display)];
 
         data = state1.map(_ => {
           _.display = true;
@@ -166,7 +168,7 @@ class List extends Component {
       gstate.state3 = state3;      
       gstate.data =  data;
       return gstate;
-    })
+    }, this.save);
     this.props.onClickChangeState(state);
   }
 

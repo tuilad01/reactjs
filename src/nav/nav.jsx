@@ -6,8 +6,7 @@ import { withRouter } from 'react-router-dom';
 
 class Nav extends Component {
     constructor(props) {
-        super(props);
-        
+        super(props);        
     }
     
     render() {
@@ -25,8 +24,8 @@ class Nav extends Component {
                     <p className="title">Word</p>
                 </div>
 
-                <div className="float-right text-right hidden-visible">
-                    <i className="material-icons nav-icon icon-clickable">
+                <div className="float-right text-right">
+                    <i className="material-icons nav-icon icon-clickable" onClick={this.props.onClickShowMenu}>
                         menu
                     </i>
                 </div>

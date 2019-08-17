@@ -1,5 +1,5 @@
 const config = {
-    apiUrl: "//wordgroup123.herokuapp.com",
+    apiUrl: "https://wordgroup123.herokuapp.com",
     localStorage: {
         learn: "a6bffeba-bda0-11e9-9cb5-2a2ae2dbcce4",
         groups: "b81d9898-bda0-11e9-9cb5-2a2ae2dbcce4",
