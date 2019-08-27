@@ -21,7 +21,7 @@ class Dashboard extends Component {
         this.wordLocal = this.getWordLocal();
         this.groupLocal = this.getGroupLocal();
         this.numberWordRemember = this.getNumberWordRemember.call(this);
-        this.percentProgressBar = Math.round((this.numberWordRemember * 100) / this.wordLocal.length);
+        this.percentProgressBar = Math.round((this.numberWordRemember * 100) / this.wordLocal.count);
 
 
     }
@@ -48,7 +48,11 @@ class Dashboard extends Component {
     }
 
     getWordLocal() {
-        return localStorageUtility.getArray(config.localStorage.words);
+        var word = localStorageUtility.get(config.localStorage.words);
+        if (word) return JSON.parse(word);
+        return {
+            count: 0
+        }
     }
     getGroupLocal() {
         return localStorageUtility.getArray(config.localStorage.groups);
@@ -89,6 +93,8 @@ class Dashboard extends Component {
         this.props.history.push({
             pathname: `/learn/${group._id}`
         })
+        // debugger
+        // window.location.hash(`/learn/${group._id}`);
     }
 
     setLocalLearn(group) {
@@ -123,7 +129,7 @@ class Dashboard extends Component {
                         <main>
                             <div className="box-container">
                                 <div className="box">
-                                    <p>{this.wordLocal.length}</p>
+                                    <p>{this.wordLocal.count}</p>
                                     <p>words</p>
                                 </div>
                                 <div className="box">
@@ -149,7 +155,7 @@ class Dashboard extends Component {
                             </div>
                             <div>
                                 <div className="number-progress-bar">
-                                    <span>{`${this.numberWordRemember}/${this.wordLocal.length}`}</span>
+                                    <span>{`${this.numberWordRemember}/${this.wordLocal.count}`}</span>
                                 </div>
                                 <div className="progress-bar margin-center">
                                     <div style={{ width: `${this.percentProgressBar}%` }}>

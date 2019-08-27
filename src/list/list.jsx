@@ -13,8 +13,8 @@ class List extends Component {
     const { data } = this.props;
 
     const _data = data.state === 1 ? data.state1 :
-      data.state === 2 ? data.state2 :
-        data.state3;
+      data.state === 2 ? [...data.state1, ...data.state2] :
+      [...data.state1, ...data.state2, ...data.state3];
 
     this.state = {
       state: data.state,
@@ -38,6 +38,7 @@ class List extends Component {
 
   componentWillMount() {
     this.clickTimeout = null;
+    this.holdMouse = null;
   }
 
   componentDidMount() {
@@ -75,6 +76,19 @@ class List extends Component {
         this.clickTimeout = null
       }, 200)
     }
+  }
+
+  onMouseDown(text) {
+    clearInterval(this.holdMouse);
+    this.holdMouse = setInterval(() => {
+      window.open(`https://translate.google.com.vn/?client=t&sl=en&tl=vi&text=${encodeURI(text)}`, '_blank');
+      clearInterval(this.holdMouse);
+      this.holdMouse = null;
+    }, 1000);
+  }
+
+  onMouseUp() {
+    clearInterval(this.holdMouse);
   }
 
   shuffle() {
@@ -177,9 +191,14 @@ class List extends Component {
     return (
       <section>
         <main className="square-container">
+          {/* <button onClick={() => {this.setState((state) => {
+            state.data.map(d => d.display = false);
+            return state;
+          })}}>click here</button> */}
+
           {this.state.data.map((word, index) => {
             return (
-              <div className={"square " + (word.display ? '' : 'hidden')} onClick={this.handleTouch.bind(this, word)} key={index}>
+              <div className={"square " + (word.display ? '' : 'hidden')} onClick={this.handleTouch.bind(this, word)} onMouseDown={this.onMouseDown.bind(this, word.name)} onMouseUp={this.onMouseUp.bind(this)} key={index}>
                 <p className={word.flipped ? "hidden" : ""}>{word.name}</p>
                 <p className={word.flipped ? "" : "hidden"}>{word.mean}</p>
               </div>

@@ -35,7 +35,60 @@ class App extends Component {
   componentDidMount() {
     this.initLocalData.call(this);
   }
-  
+
+  fetchNewGroup(arrGroup) {
+    if (!arrGroup || arrGroup.length === 0) return false;
+
+    const strLearnLocal = localStorageUtil.get(config.localStorage.learn);
+
+    if (!strLearnLocal) return false;
+    const learn = JSON.parse(strLearnLocal);
+    let arrKeyNotFound = [];
+    for (const key in learn) {
+      if (learn.hasOwnProperty(key)) {
+        const group = learn[key];
+
+        const groupNew = arrGroup.find(_ => _._id === group._id);
+
+        if (!groupNew) {
+          arrKeyNotFound.push(group._id);
+          continue;
+        }
+
+        if (groupNew.words.length === group.words.length) continue;
+
+        // New word in group
+        groupNew.words.filter(_ => !group.words.find(__ => __._id === _._id)).map(word => {          
+          group.state1.push({
+            _id: word._id,
+            name: word.name,
+            mean: word.mean,
+            flipped: false,
+            display: true
+          });
+        });
+        // Word not found in group local
+        group.words.filter(_ => !groupNew.words.find(__ => __._id === _._id)).map(word => {
+          group.state1 = group.state1.filter(_ => _._id != word._id);
+          group.state2 = group.state2.filter(_ => _._id != word._id);
+          group.state3 = group.state3.filter(_ => _._id != word._id);
+        });
+
+        group.words = groupNew.words;
+        group.percent = Math.round((group.state3.length * 100) / group.words.length);        
+      }
+    }
+    if(arrKeyNotFound.length > 0) {
+      arrKeyNotFound.map(key => {
+        delete learn[key];
+      });
+    }
+    
+
+    localStorageUtil.set(config.localStorage.learn, learn);
+    return true;
+  }
+
   initLocalData() {
     const localGroups = localStorageUtil.getArray(config.localStorage.groups);
     if (localGroups.length <= 0) {
@@ -44,6 +97,9 @@ class App extends Component {
         .then(
           (result) => {
             localStorageUtil.set(config.localStorage.groups, result);
+            
+            this.fetchNewGroup(result);
+
             this.setState((state) => {
               state.groupFetch.isLoaded = true;
               return state;
@@ -63,9 +119,9 @@ class App extends Component {
       });
     }
 
-    const localWords = localStorageUtil.getArray(config.localStorage.words);
-    if (localWords.length <= 0) {
-      fetch(`${config.apiUrl}/word`)
+    const localWords = localStorageUtil.get(config.localStorage.words);
+    if (!localWords) {
+      fetch(`${config.apiUrl}/word/total`)
         .then(res => res.json())
         .then(
           (result) => {
@@ -100,7 +156,7 @@ class App extends Component {
     this.setState(state => {
       state.isShowMenu = !state.isShowMenu;
       return state;
-    })    
+    })
   }
 
 
