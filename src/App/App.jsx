@@ -28,12 +28,18 @@ class App extends Component {
         error: null,
         isLoaded: false,
       },
-      isShowMenu: false
+      isShowMenu: false,
+      scrollTop: 0
     };
   }
 
   componentDidMount() {
     this.initLocalData.call(this);
+    window.addEventListener('scroll', this.handleScroll.bind(this));
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('scroll', this.handleScroll.bind(this));
   }
 
   fetchNewGroup(arrGroup) {
@@ -58,7 +64,7 @@ class App extends Component {
         if (groupNew.words.length === group.words.length) continue;
 
         // New word in group
-        groupNew.words.filter(_ => !group.words.find(__ => __._id === _._id)).map(word => {          
+        groupNew.words.filter(_ => !group.words.find(__ => __._id === _._id)).map(word => {
           group.state1.push({
             _id: word._id,
             name: word.name,
@@ -75,15 +81,15 @@ class App extends Component {
         });
 
         group.words = groupNew.words;
-        group.percent = Math.round((group.state3.length * 100) / group.words.length);        
+        group.percent = Math.round((group.state3.length * 100) / group.words.length);
       }
     }
-    if(arrKeyNotFound.length > 0) {
+    if (arrKeyNotFound.length > 0) {
       arrKeyNotFound.map(key => {
         delete learn[key];
       });
     }
-    
+
 
     localStorageUtil.set(config.localStorage.learn, learn);
     return true;
@@ -97,7 +103,7 @@ class App extends Component {
         .then(
           (result) => {
             localStorageUtil.set(config.localStorage.groups, result);
-            
+
             this.fetchNewGroup(result);
 
             this.setState((state) => {
@@ -159,6 +165,27 @@ class App extends Component {
     })
   }
 
+  handleScroll(event) {
+    this.setState({
+      scrollTop: window.scrollY
+    })
+  }
+
+  scrollTop() {
+    const display = this.state.scrollTop < 200 ? 'none' : 'block';
+    const scrollTop = () => {
+      document.body.scrollTop = 0;
+      document.documentElement.scrollTop = 0;
+    };
+
+    return (
+      <div className="scroll-top" style={{ display: display }} onClick={scrollTop}>
+        <i className="material-icons">
+          arrow_upward
+              </i>
+      </div>
+    );
+  }
 
 
   render() {
@@ -192,7 +219,10 @@ class App extends Component {
               <Route component={Notfound} />
             </Switch>
             {this.state.isShowMenu ? <NavMenu /> : ""}
+
             <Footer />
+
+            {this.scrollTop()}
           </div>
         </Router>
       );
