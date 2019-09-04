@@ -124,7 +124,9 @@ class List extends Component {
       group.state1 = state1;
       group.state2 = state2;
       group.state3 = state3;
-      group.percent = Math.round((state3.length * 100) / group.words.length);   
+      group.percent = Math.round((state3.length * 100) / group.words.length);
+      group.lastLearnAt = new Date().getTime();
+      
       localStorageUtility.set(config.localStorage.learn, learnLocal);
     }
   }
