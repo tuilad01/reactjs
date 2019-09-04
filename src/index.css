@@ -14,7 +14,6 @@ body {
   padding-bottom: 60px;
 }
 
-
 nav {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
@@ -52,9 +51,8 @@ nav {
   flex-direction: row;
   flex-wrap: wrap;
   align-items: center;
-  
   width: 360px;
-  margin: 0 auto;    
+  margin: 0 auto;
 }
 
 .box {
@@ -68,25 +66,30 @@ nav {
 }
 
 .box:nth-child(4n+1) {
-  background-color:#27ae60;
+  background-color: #27ae60;
 }
+
 .box:nth-child(4n+2) {
   background-color: #0abde3;
 }
+
 .box:nth-child(4n+3) {
-  background-color:#d35400;
+  background-color: #d35400;
 }
+
 .box:nth-child(4n+4) {
   background-color: #FFC312;
 }
 
-.box > p:nth-child(1) {
+.box>p:nth-child(1) {
   font-weight: bold;
 }
-.box > p:nth-child(2) {
+
+.box>p:nth-child(2) {
   font-size: 0.7em;
   font-style: italic;
 }
+
 /* Progress bar */
 
 .progress-bar {
@@ -124,10 +127,10 @@ nav {
 
 @keyframes precent {
   0% {
-      width: 0%;
+    width: 0%;
   }
   100% {
-      width: 100%;
+    width: 100%;
   }
 }
 
@@ -176,6 +179,20 @@ nav {
 
 .list>li>.detail>p:nth-child(2) {
   font-style: italic;
+}
+
+.learn-recent {
+  background-color: #2ecc71 !important;
+}
+
+.learn-recent-1hour {
+  background-color: #9f5e25 !important;
+}
+
+.last-learn-at {
+  font-size: 0.8em;
+  font-style: italic;
+  margin-top: 3px;
 }
 
 /* Square */
@@ -298,6 +315,23 @@ nav {
   font-size: 0.7em;
 }
 
+/* Scroll top */
+
+.scroll-top {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background-color: rgba(34, 139, 34, 0.5);
+  padding: 5px 7px;
+  border-radius: 5px;
+  cursor: pointer;
+  z-index: 10;
+}
+
+.scroll-top:hover {
+  background-color: rgb(34, 139, 34);
+}
+
 /* Common class */
 
 .color-red {
@@ -314,7 +348,7 @@ nav {
   align-items: center;
 }
 
-.margin-t20{
+.margin-t20 {
   margin-top: 20px;
 }
 
@@ -447,6 +481,7 @@ a {
 .text-right {
   text-align: right;
 }
+
 .text-bold {
   font-weight: bold;
 }
@@ -458,13 +493,13 @@ a {
 
 /* Small devices (landscape phones, 576px and up) */
 
-@media (min-width: 576px) {   
+@media (min-width: 576px) {
   .box-container, .progress-bar, .list>li, .number-progress-bar {
     width: 500px;
-  } 
+  }
   .square {
-      width: 250px;
-      height: 250px;
+    width: 250px;
+    height: 250px;
   }
 }
 
@@ -472,7 +507,7 @@ a {
 
 @media (min-width: 768px) {
   .container {
-      width: 80%;
+    width: 80%;
   }
 }
 
@@ -480,7 +515,7 @@ a {
 
 @media (min-width: 992px) {
   .nav-control {
-      margin-bottom: 50px;
+    margin-bottom: 50px;
   }
 }
 
