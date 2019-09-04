@@ -42,7 +42,7 @@ class Dashboard extends Component {
         let learnLocal = {};
         const strLearnLocal = localStorageUtility.get(config.localStorage.learn);
         if (strLearnLocal) {
-            learnLocal = JSON.parse(strLearnLocal);            
+            learnLocal = JSON.parse(strLearnLocal);
         }
         return learnLocal;
     }
@@ -111,8 +111,54 @@ class Dashboard extends Component {
         group.state2 = [];
         group.state3 = [];
         group.percent = 1;
-        group.lastLearnAt = Date.now();
+        //group.lastLearnAt = Date.now();
         return group;
+    }
+
+    getDayOfWeek(number) {
+        switch (number) {
+            case 0:
+                return 'Su';
+            case 1:
+                return 'Mo';
+            case 2:
+                return 'Tu';
+            case 3:
+                return 'We';
+            case 4:
+                return 'Th';
+            case 5:
+                return 'Fr';
+            case 6:
+                return 'Sa';
+            default:
+                return 'Not in earth';
+        }
+    }
+
+    toDate(date) {
+        return this.getDayOfWeek(date.getDay()) + ', ' + date.toLocaleString();
+    }
+
+    learnRecent(date) {
+        let learnRecent = {
+            class: "",
+            date: ""
+        };
+        const now = new Date();
+        const getMin = (time) => ((now.getTime() - date) / 1000 / 60);
+
+        if (typeof(date) === "number") {
+            if (getMin(date) < 5) {
+                learnRecent.class = "learn-recent";
+            } else if (getMin(date) < 60) {
+                learnRecent.class = "learn-recent-1hour";
+            }
+
+            learnRecent.date = this.toDate(new Date(date));
+        }       
+
+        return learnRecent;
     }
 
     render() {
@@ -172,18 +218,25 @@ class Dashboard extends Component {
                                 {this.state.groups.map((group, index) => {
                                     const _group = this.learnLocal[group._id];
                                     let percent = 1;
+                                    let learnRecent = {
+                                        class: "",
+                                        date: ""
+                                    };
+
                                     if (_group) {
                                         percent = _group.percent > 0 ? _group.percent : 1;
+                                        learnRecent = this.learnRecent(_group.lastLearnAt);
                                     }
 
                                     return (
-                                        <li onClick={this.handleTouch.bind(this, group)} key={index}>
+                                        <li className={learnRecent.class} onClick={this.handleTouch.bind(this, group)} key={index}>
                                             <div>
                                                 <span>{group.words.length || 0}</span>
                                             </div>
                                             <div className="detail">
                                                 <p>{group.name}</p>
                                                 <p>{group.description}</p>
+                                                <p className="last-learn-at">{learnRecent.date}</p>
                                             </div>
                                             <div className="margin-center">
                                                 <div className={`c100 p${percent} blue`}>
