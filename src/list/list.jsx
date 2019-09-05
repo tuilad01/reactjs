@@ -241,7 +241,7 @@ class List extends Component {
                 onMouseDown={this.onMouseDown.bind(this, word.name)}
                 onMouseUp={this.onMouseUp.bind(this)}
                 key={index}>
-                <Swipeable onSwiped={this.openPopup.bind(this, word.name)} {...config}>
+                <Swipeable onSwipedRight={this.openPopup.bind(this, word.name)} {...config}>
                   <p className={word.flipped ? "hidden" : ""}>{word.name}</p>
                   <p className={word.flipped ? "" : "hidden"}>{word.mean}</p>
                 </Swipeable>
