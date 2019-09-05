@@ -30,6 +30,7 @@ class Menu extends Component {
                         <a href="#" className="title-menu">Menu panel</a>
                     </div>
                     <ul>
+                        <li><a href="/">Home</a></li>
                         <li><a href="https://tuilad01.github.io/#/word">Word</a></li>
                         <li><a href="https://tuilad01.github.io/#/group">Group</a></li>
                         <li><a href="#" onClick={e => this.clearCache(e)}>Clear cache</a></li>

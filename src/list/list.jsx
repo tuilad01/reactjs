@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import './list.css';
+import { useSwipeable, Swipeable } from 'react-swipeable';
 
 import { mergeArray, splitByArray } from './../arrayUtility';
 import localStorageUtility from '../localStorageUtility';
@@ -14,7 +15,7 @@ class List extends Component {
 
     const _data = data.state === 1 ? data.state1 :
       data.state === 2 ? [...data.state1, ...data.state2] :
-      [...data.state1, ...data.state2, ...data.state3];
+        [...data.state1, ...data.state2, ...data.state3];
 
     this.state = {
       state: data.state,
@@ -29,11 +30,15 @@ class List extends Component {
           flipped: false,
           display: true
         }
-      })
+      }),
+      popup: {
+        isOpen: false,
+        text: "world"
+      }
     };
 
     this.gFlip = false;
-    
+
   }
 
   componentWillMount() {
@@ -114,7 +119,7 @@ class List extends Component {
     return array;
   }
 
-  save() { 
+  save() {
     const { state, state1, state2, state3 } = this.state;
     const strLearnLocal = localStorageUtility.get(config.localStorage.learn);
     if (strLearnLocal) {
@@ -126,7 +131,7 @@ class List extends Component {
       group.state3 = state3;
       group.percent = Math.round((state3.length * 100) / group.words.length);
       group.lastLearnAt = new Date().getTime();
-      
+
       localStorageUtility.set(config.localStorage.learn, learnLocal);
     }
   }
@@ -140,12 +145,12 @@ class List extends Component {
       case 1:
         state1 = [...data.filter(_ => _.display)];
         state2 = [...data.filter(_ => !_.display), ...state2];
-        data = [... state1, ...state2].map(_ => {
+        data = [...state1, ...state2].map(_ => {
           _.display = true;
           _.flipped = this.gFlip;
           return _;
         });
-        state++;        
+        state++;
         break;
 
       case 2:
@@ -161,7 +166,7 @@ class List extends Component {
 
       case 3:
         const remember = data.filter(_ => !_.display);
-        
+
         state3 = [...remember.filter(rem => state2.find(sta2 => sta2._id === rem._id) || state3.find(sta3 => sta3._id === rem._id))];
         state2 = [...remember.filter(rem => state1.find(sta1 => sta1._id === rem._id))];
         state1 = [...data.filter(_ => _.display)];
@@ -181,15 +186,45 @@ class List extends Component {
       gstate.state = state;
       gstate.state1 = state1;
       gstate.state2 = state2;
-      gstate.state3 = state3;      
-      gstate.data =  data;
+      gstate.state3 = state3;
+      gstate.data = data;
       return gstate;
     }, this.save);
     this.props.onClickChangeState(state);
   }
 
+  openPopup(word) {
+    this.setState(state => {
+      state.popup.isOpen = true;
+      state.popup.text = word;
+      return state;
+    })
+  }
+
+  closePopup() {
+    this.setState(state => {
+      state.popup.isOpen = false;
+      state.popup.text = "";
+      return state;
+    })
+  }
+
 
   render() {
+    const config = {
+      delta: 20,                             // min distance(px) before a swipe starts
+      preventDefaultTouchmoveEvent: true,   // preventDefault on touchmove, *See Details*
+      trackTouch: true,                      // track touch input
+      trackMouse: true,                     // track mouse input
+      rotationAngle: 0,                      // set a rotation angle
+    }
+
+    // const handlers = useSwipeable({
+    //   onSwipedRight: (eventData) => {
+    //     console.log("swipe right");
+    //   }, ...config
+    // });
+
     return (
       <section>
         <main className="square-container">
@@ -200,13 +235,33 @@ class List extends Component {
 
           {this.state.data.map((word, index) => {
             return (
-              <div className={"square " + (word.display ? '' : 'hidden')} onClick={this.handleTouch.bind(this, word)} onMouseDown={this.onMouseDown.bind(this, word.name)} onMouseUp={this.onMouseUp.bind(this)} key={index}>
-                <p className={word.flipped ? "hidden" : ""}>{word.name}</p>
-                <p className={word.flipped ? "" : "hidden"}>{word.mean}</p>
+
+              <div className={"square " + (word.display ? '' : 'hidden')}
+                onClick={this.handleTouch.bind(this, word)}
+                onMouseDown={this.onMouseDown.bind(this, word.name)}
+                onMouseUp={this.onMouseUp.bind(this)}
+                key={index}>
+                <Swipeable onSwiped={this.openPopup.bind(this, word.name)} {...config}>
+                  <p className={word.flipped ? "hidden" : ""}>{word.name}</p>
+                  <p className={word.flipped ? "" : "hidden"}>{word.mean}</p>
+                </Swipeable>
+
               </div>
+
             );
           })}
         </main>
+
+        <div className={"popup-link " + (this.state.popup.isOpen ? '' : 'hidden')} onClick={event => {
+          if (event.target.tagName !== "A") {
+            this.closePopup.call(this);
+          }
+        }}>
+          <a href={`https://translate.google.com.vn/?client=t&sl=en&tl=vi&text=${encodeURI(this.state.popup.text)}`} target="_blank">
+          🔊 {this.state.popup.text} 
+          </a>
+        </div>
+
       </section>
     );
   }

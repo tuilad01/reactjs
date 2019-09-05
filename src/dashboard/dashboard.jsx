@@ -147,12 +147,15 @@ class Dashboard extends Component {
         };
         const now = new Date();
         const getMin = (time) => ((now.getTime() - date) / 1000 / 60);
+        const getDay = (time) => ((now.getTime() - date) / 1000 / 60 / 60 / 24); 
 
         if (typeof(date) === "number") {
             if (getMin(date) < 5) {
                 learnRecent.class = "learn-recent";
             } else if (getMin(date) < 60) {
                 learnRecent.class = "learn-recent-1hour";
+            } else if (getDay(date) > 1) {
+                learnRecent.class = "learn-recent-1day";
             }
 
             learnRecent.date = this.toDate(new Date(date));

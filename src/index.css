@@ -186,13 +186,46 @@ nav {
 }
 
 .learn-recent-1hour {
-  background-color: #9f5e25 !important;
+  background-color: #f0932b !important;
+}
+
+.learn-recent-1day {
+  background-color: #c0392b !important;
 }
 
 .last-learn-at {
   font-size: 0.8em;
   font-style: italic;
   margin-top: 3px;
+}
+
+/* Popup link */
+
+.popup-link {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(0, 0, 0, 0.5);  
+}
+
+.popup-link > a {
+  display: block;
+  background: #4a69bd;
+  border-radius: 5px;
+  padding: 10px 5px;
+  width: 200px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+  text-align: center;
+  color: #fff;
+  box-shadow: 0 20px 70px rgba(0, 0, 0, 0.55);
 }
 
 /* Square */
