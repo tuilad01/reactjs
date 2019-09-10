@@ -33,7 +33,8 @@ class List extends Component {
       }),
       popup: {
         isOpen: false,
-        text: "world"
+        text: "world",
+        rd: 0
       }
     };
 
@@ -193,20 +194,29 @@ class List extends Component {
     this.props.onClickChangeState(state);
   }
 
+random (min, max) {
+    return Math.floor(Math.random() * (+max - +min)) + +min; 
+}
+
   openPopup(word) {
-    this.setState(state => {
-      state.popup.isOpen = true;
-      state.popup.text = word;
-      return state;
-    })
+    this.setState(() => ({
+      popup: {
+        isOpen: true,
+        text: word,
+        rd: this.random(1,9999999)
+      }    
+    }))
   }
 
+
   closePopup() {
-    this.setState(state => {
-      state.popup.isOpen = false;
-      state.popup.text = "";
-      return state;
-    })
+    this.setState(() => ({
+      popup: {
+        isOpen: false,
+        text: "",
+        rd: 0
+      }
+    }))
   }
 
 
@@ -257,9 +267,7 @@ class List extends Component {
             this.closePopup.call(this);
           }
         }}>
-          <a href={`https://translate.google.com.vn/?client=t&sl=en&tl=vi&text=${encodeURI(this.state.popup.text)}`} target="_blank">
-          🔊 {this.state.popup.text} 
-          </a>
+          <audio id="audio-speech" controls src={this.state.popup.isOpen ? `http://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=en&q=${encodeURI(this.state.popup.text)}&rd=${this.state.popup.rd}` : ''}></audio>          
         </div>
 
       </section>

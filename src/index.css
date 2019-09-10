@@ -214,7 +214,7 @@ nav {
   background-color: rgba(0, 0, 0, 0.5);  
 }
 
-.popup-link > a {
+/* .popup-link > a {
   display: block;
   background: #4a69bd;
   border-radius: 5px;
@@ -226,7 +226,7 @@ nav {
   text-align: center;
   color: #fff;
   box-shadow: 0 20px 70px rgba(0, 0, 0, 0.55);
-}
+} */
 
 /* Square */
 
