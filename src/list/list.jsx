@@ -120,6 +120,24 @@ class List extends Component {
     return array;
   }
 
+  pinGroup() {
+    let result = false;
+    const strLearnLocal = localStorageUtility.get(config.localStorage.learn);
+    if (strLearnLocal) {
+      const learnLocal = JSON.parse(strLearnLocal);
+      const group = learnLocal[this.props.data._id];
+      if (group.isPin === undefined) {
+        group.isPin = true
+      } else {
+        group.isPin = !group.isPin
+      }
+      localStorageUtility.set(config.localStorage.learn, learnLocal);
+      result = group.isPin
+    }
+    
+    return result
+  }
+
   save() {
     const { state, state1, state2, state3 } = this.state;
     const strLearnLocal = localStorageUtility.get(config.localStorage.learn);
@@ -132,6 +150,9 @@ class List extends Component {
       group.state3 = state3;
       group.percent = Math.round((state3.length * 100) / group.words.length);
       group.lastLearnAt = new Date().getTime();
+      if (group.state === 1) {
+        group.learnNumberTimes = group.learnNumberTimes ? group.learnNumberTimes + 1 : 1
+      }
 
       localStorageUtility.set(config.localStorage.learn, learnLocal);
     }

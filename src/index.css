@@ -381,6 +381,13 @@ nav {
   align-items: center;
 }
 
+.flex-center-column {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
 .margin-t20 {
   margin-top: 20px;
 }

@@ -147,9 +147,9 @@ class Dashboard extends Component {
         };
         const now = new Date();
         const getMin = (time) => ((now.getTime() - date) / 1000 / 60);
-        const getDay = (time) => ((now.getTime() - date) / 1000 / 60 / 60 / 24); 
+        const getDay = (time) => ((now.getTime() - date) / 1000 / 60 / 60 / 24);
 
-        if (typeof(date) === "number") {
+        if (typeof (date) === "number") {
             if (getMin(date) < 5) {
                 learnRecent.class = "learn-recent";
             } else if (getMin(date) < 60) {
@@ -159,9 +159,25 @@ class Dashboard extends Component {
             }
 
             learnRecent.date = this.toDate(new Date(date));
-        }       
+        }
 
         return learnRecent;
+    }
+
+    _renderGroupName = (name, learnNumberTimes) => {
+        if (!learnNumberTimes) {
+            return (
+                <p>
+                    {name}
+                </p>
+            )
+        }
+
+        return (
+            <p>
+                {name} <i class="material-icons">flag</i> {learnNumberTimes}
+            </p>
+        )
     }
 
     render() {
@@ -172,6 +188,17 @@ class Dashboard extends Component {
         } else if (!isLoaded) {
             return <SpinnerLoading />;
         } else {
+            groups.sort((a, b) => {
+                const _groupA = this.learnLocal[a._id],
+                    _groupB = this.learnLocal[b._id]
+                let isPinA = _groupA && _groupA.isPin ? true : false,
+                    isPinB = _groupB && _groupB.isPin ? true : false
+
+                if (isPinA === isPinB) return 0;
+                if (isPinA) return -1;
+                return 0;
+            })
+
             return (
                 <div>
                     <section>
@@ -218,26 +245,34 @@ class Dashboard extends Component {
                     <section>
                         <main>
                             <ul className="list">
-                                {this.state.groups.map((group, index) => {
+                                {groups.map((group, index) => {
                                     const _group = this.learnLocal[group._id];
                                     let percent = 1;
                                     let learnRecent = {
                                         class: "",
                                         date: ""
                                     };
-
+                                    let learnNumberTimes = 0;
+                                    let isPin = false;
                                     if (_group) {
                                         percent = _group.percent > 0 ? _group.percent : 1;
                                         learnRecent = this.learnRecent(_group.lastLearnAt);
+                                        learnNumberTimes = _group.learnNumberTimes
+                                        isPin = _group.isPin
                                     }
 
                                     return (
                                         <li className={learnRecent.class} onClick={this.handleTouch.bind(this, group)} key={index}>
-                                            <div>
+                                            <div className="flex-center-column">
+                                                {isPin &&
+                                                    <i class="material-icons">
+                                                        warning
+                                                    </i>
+                                                }
                                                 <span>{group.words.length || 0}</span>
                                             </div>
                                             <div className="detail">
-                                                <p>{group.name}</p>
+                                                {this._renderGroupName(group.name, learnNumberTimes)}
                                                 <p>{group.description}</p>
                                                 <p className="last-learn-at">{learnRecent.date}</p>
                                             </div>

@@ -14,7 +14,9 @@ class NavControl extends Component {
         })
       }
 
-    render() {
+    render() {        
+        const pinIcon = this.props.isPin ? 'clear' : 'warning'
+        const pinText = this.props.isPin ? 'UnPin' : 'Pin'
         return (
             <div className="nav-control">
                 <button className="button-icon" onClick={this.props.onClickShuffle}>
@@ -23,11 +25,11 @@ class NavControl extends Component {
                     </i>
                     <span>Shuffle</span>                    
                 </button>
-                <button className="button-icon" onClick={this.props.onClickSave}>
+                <button className="button-icon" onClick={this.props.onClickPinGroup}>
                     <i className="material-icons">
-                        save
+                        {pinIcon}
                     </i>
-                    <span>Save</span>
+                    <span>{pinText}</span>
                 </button>
                 <button className="button-icon" onClick={this.props.onClickNext}>
                     <i className="material-icons">
