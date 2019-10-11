@@ -1,13 +1,9 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
 import './nav.css';
 
 import { withRouter } from 'react-router-dom';
 
 class Nav extends Component {
-    constructor(props) {
-        super(props);        
-    }
     
     render() {
         const {location, history} = this.props;
@@ -33,9 +29,5 @@ class Nav extends Component {
         );
     }
 }
-
-Nav.propTypes = {
-
-};
 
 export default withRouter(Nav);
