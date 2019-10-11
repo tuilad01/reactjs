@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import './App.css';
-import { BrowserRouter as Router, Route, Link, Switch } from "react-router-dom";
+import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 
 import localStorageUtil from '../localStorageUtility';
 import config from '../config';
@@ -31,10 +31,13 @@ class App extends Component {
       isShowMenu: false,
       scrollTop: 0
     };
+
+    this.learnLocal = localStorageUtil.get(config.localStorage.learn)
   }
 
   componentDidMount() {
-    this.initLocalData.call(this);
+    this.initLocalData();
+
     window.addEventListener('scroll', this.handleScroll.bind(this));
   }
 
@@ -45,7 +48,7 @@ class App extends Component {
   fetchNewGroup(arrGroup) {
     if (!arrGroup || arrGroup.length === 0) return false;
 
-    const strLearnLocal = localStorageUtil.get(config.localStorage.learn);
+    const strLearnLocal = this.learnLocal;
 
     if (!strLearnLocal) return false;
     const learn = JSON.parse(strLearnLocal);
@@ -72,53 +75,115 @@ class App extends Component {
             flipped: false,
             display: true
           });
+          return word;
         });
         // Word not found in group local
         group.words.filter(_ => !groupNew.words.find(__ => __._id === _._id)).map(word => {
-          group.state1 = group.state1.filter(_ => _._id != word._id);
-          group.state2 = group.state2.filter(_ => _._id != word._id);
-          group.state3 = group.state3.filter(_ => _._id != word._id);
+          group.state1 = group.state1.filter(_ => _._id !== word._id);
+          group.state2 = group.state2.filter(_ => _._id !== word._id);
+          group.state3 = group.state3.filter(_ => _._id !== word._id);
+          return word;
         });
 
         group.words = groupNew.words;
         group.percent = Math.round((group.state3.length * 100) / group.words.length);
       }
     }
+
     if (arrKeyNotFound.length > 0) {
       arrKeyNotFound.map(key => {
         delete learn[key];
+        return key;
       });
     }
 
 
     localStorageUtil.set(config.localStorage.learn, learn);
-    return true;
+    this.learnLocal = JSON.stringify(learn)
+    return true
   }
 
-  initLocalData() {
+  _createGroup = () => {
+    return {
+      _id: '',
+      name: '',
+      description: '',
+      words: [],
+      state: 1,
+      state1: [],
+      state2: [],
+      state3: [],
+      percent: 1,
+      learnNumberTimes: 0
+    }
+  }
+
+  createSimilarGroup = () => {
+    const strLearnLocal = this.learnLocal
+    let learn = {}
+    if (strLearnLocal) {
+      learn = JSON.parse(strLearnLocal);
+      if (learn[config.localStorage.similarGroup]) {
+        return false;
+      }
+    }
+
+    learn[config.localStorage.similarGroup] = this._createGroup()
+    learn[config.localStorage.similarGroup]._id = config.localStorage.similarGroup
+    learn[config.localStorage.similarGroup].name = 'Similar words'
+    learn[config.localStorage.similarGroup].description = 'Similar words'
+
+    localStorageUtil.set(config.localStorage.learn, learn);
+    this.learnLocal = JSON.stringify(learn)
+  }
+
+  createForgetGroup = () => {
+    const strLearnLocal = this.learnLocal
+    let learn = {}
+    if (strLearnLocal) {
+      learn = JSON.parse(strLearnLocal);
+      if (learn[config.localStorage.forgetGroup]) {
+        return false;
+      }
+    }
+
+    learn[config.localStorage.forgetGroup] = this._createGroup()
+    learn[config.localStorage.forgetGroup]._id = config.localStorage.forgetGroup
+    learn[config.localStorage.forgetGroup].name = 'Forget words'
+    learn[config.localStorage.forgetGroup].description = 'Forget words'
+
+    localStorageUtil.set(config.localStorage.learn, learn);
+    this.learnLocal = JSON.stringify(learn)
+  }
+
+  initLocalData = () => {
     const localGroups = localStorageUtil.getArray(config.localStorage.groups);
+
     if (localGroups.length <= 0) {
       fetch(`${config.apiUrl}/group`)
         .then(res => res.json())
-        .then(
-          (result) => {
-            localStorageUtil.set(config.localStorage.groups, result);
+        .then(result => {
+          localStorageUtil.set(config.localStorage.groups, result);
 
-            this.fetchNewGroup(result);
+          this.fetchNewGroup(result)
+          this.createSimilarGroup()
+          this.createForgetGroup()
 
-            this.setState((state) => {
-              state.groupFetch.isLoaded = true;
-              return state;
-            });
-          },
-          (error) => {
-            this.setState((state) => {
-              state.groupFetch.isLoaded = true;
-              state.groupFetch.error = error;
-              return state;
-            });
-          }
-        );
+          this.setState((state) => {
+            state.groupFetch.isLoaded = true;
+            return state;
+          });
+
+          return result
+        })
+        .catch(error => {
+          this.setState((state) => {
+            state.groupFetch.isLoaded = true;
+            state.groupFetch.error = error;
+            return state;
+          });
+          return error
+        });
     } else {
       this.setState((state) => {
         state.groupFetch.isLoaded = true;
@@ -129,22 +194,22 @@ class App extends Component {
     if (!localWords) {
       fetch(`${config.apiUrl}/word/total`)
         .then(res => res.json())
-        .then(
-          (result) => {
-            localStorageUtil.set(config.localStorage.words, result);
-            this.setState((state) => {
-              state.wordFetch.isLoaded = true;
-              return state;
-            });
-          },
-          (error) => {
-            this.setState((state) => {
-              state.wordFetch.isLoaded = true;
-              state.wordFetch.error = error;
-              return state;
-            });
-          }
-        );
+        .then(result => {
+          localStorageUtil.set(config.localStorage.words, result);
+          this.setState((state) => {
+            state.wordFetch.isLoaded = true;
+            return state;
+          });
+          return result
+        })
+        .catch(error => {
+          this.setState((state) => {
+            state.wordFetch.isLoaded = true;
+            state.wordFetch.error = error;
+            return state;
+          });
+          return error
+        });
     } else {
       this.setState((state) => {
         state.wordFetch.isLoaded = true;
@@ -153,11 +218,6 @@ class App extends Component {
     }
   }
 
-  // Using ref child component
-  // const list = React.createRef();
-
-
-
   callOpenMenu() {
     this.setState(state => {
       state.isShowMenu = !state.isShowMenu;
@@ -165,7 +225,7 @@ class App extends Component {
     })
   }
 
-  handleScroll(event) {
+  handleScroll() {
     this.setState({
       scrollTop: window.scrollY
     })
