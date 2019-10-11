@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
 
 import localStorageUtility from '../localStorageUtility';
 import config from '../config';
@@ -84,9 +83,5 @@ class Learn extends Component {
         }        
     }
 }
-
-Learn.propTypes = {
-
-};
 
 export default Learn;
