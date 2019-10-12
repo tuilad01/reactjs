@@ -546,7 +546,7 @@ class Dashboard extends Component {
                                                             <td>{word.name}</td>
                                                             <td>
                                                                 <i className="material-icons icon-clickable" onClick={() => this.delteSimilarGroup(word._id)}>
-                                                                    delete_outline
+                                                                    clear
                                                     </i>
                                                             </td>
                                                         </tr>
