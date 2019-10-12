@@ -250,20 +250,9 @@ random (min, max) {
       rotationAngle: 0,                      // set a rotation angle
     }
 
-    // const handlers = useSwipeable({
-    //   onSwipedRight: (eventData) => {
-    //     console.log("swipe right");
-    //   }, ...config
-    // });
-
     return (
       <section>
         <main className="square-container">
-          {/* <button onClick={() => {this.setState((state) => {
-            state.data.map(d => d.display = false);
-            return state;
-          })}}>click here</button> */}
-
           {this.state.data.map((word, index) => {
             return (
 

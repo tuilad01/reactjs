@@ -16,7 +16,7 @@ class Dashboard extends Component {
             error: null,
             isLoaded: false,
             groups: [],
-            string: 'competing',
+            string: '',
             rate: 0.5,
             similarWords: [],
             similarGroup: {},
@@ -250,9 +250,12 @@ class Dashboard extends Component {
     }
 
     updateInputRate = (e) => {
-        this.setState({
-            rate: e.target.value
-        })
+        const value = e.target.value
+        if (0 < value && value <= 1) {
+            this.setState({
+                rate: e.target.value
+            })
+        }
     }
 
     addForgetGroup = () => {
@@ -483,13 +486,13 @@ class Dashboard extends Component {
                                     </div>
                                 </div>
 
-                                <div style={{ display: isSearchTab ? 'block' : 'none' }}>
+                                <div className="content-tab" style={{ display: isSearchTab ? 'block' : 'none' }}>
                                     <label>Word:
-                                        <input value={string} onChange={e => this.updateInputValue(e)} onKeyPress={this.onKeyPress} className="input-text" placeholder="your word..." />
+                                        <input type="text" value={string} onChange={e => this.updateInputValue(e)} onKeyPress={this.onKeyPress} className="input-text" placeholder="your word..." />
                                     </label>
 
                                     <label>Rate:
-                                        <input value={rate} onChange={e => this.updateInputRate(e)} onKeyPress={this.onKeyPress} className="input-text" placeholder="your rate..." />
+                                        <input type="number" min="0.1" max="1" step="0.1" value={rate} onChange={e => this.updateInputRate(e)} onKeyPress={this.onKeyPress} className="input-text" placeholder="your rate..." />
                                     </label>
 
                                     <div className="table-responsive">
@@ -522,7 +525,7 @@ class Dashboard extends Component {
                                     </div>
                                 </div>
 
-                                <div style={{ display: isGroupTab ? 'block' : 'none' }}>
+                                <div className="content-tab" style={{ display: isGroupTab ? 'block' : 'none' }}>
                                     <div className="table-responsive">
                                         <table>
                                             <tbody>

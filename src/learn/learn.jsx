@@ -38,8 +38,6 @@ class Learn extends Component {
 
     callShuffle() {
         this.list.current.shuffle();
-        //console.log(this.list);
-        //alert("a");
     }
 
     callPinGroup() {        

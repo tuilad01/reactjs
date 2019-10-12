@@ -164,10 +164,8 @@ class App extends Component {
         .then(res => res.json())
         .then(result => {
           localStorageUtil.set(config.localStorage.groups, result);
-
+          
           this.fetchNewGroup(result)
-          this.createSimilarGroup()
-          this.createForgetGroup()
 
           this.setState((state) => {
             state.groupFetch.isLoaded = true;
@@ -269,6 +267,10 @@ class App extends Component {
         </section>
       );
     } else {
+     
+      this.createSimilarGroup()
+      this.createForgetGroup()
+
       return (
         <Router>
           <div>
