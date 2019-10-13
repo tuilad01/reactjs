@@ -74,6 +74,7 @@ class Dashboard extends Component {
         let number = 0;
         for (const key in this.learnLocal) {
             if (this.learnLocal.hasOwnProperty(key)) {
+                if (key === config.localStorage.forgetGroup || key === config.localStorage.similarGroup) continue
                 const element = this.learnLocal[key];
                 number += element.state3.length
             }
