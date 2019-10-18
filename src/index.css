@@ -507,8 +507,8 @@ tr:nth-child(even) {
 
 .collapse-main {
   display: none;
-  background-color:#c7ecee;
-  color: #333;
+  background-color:#2d3436;
+  color: #fff;
   padding: 20px;
 }
 
