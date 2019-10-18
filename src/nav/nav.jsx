@@ -8,7 +8,7 @@ class Nav extends Component {
     render() {
         const {location, history} = this.props;
 
-        const hiddenVisible = location.pathname.indexOf("/learn") >= 0 ? "" : "hidden-visible";
+        const hiddenVisible = location.pathname.indexOf("/learn") >= 0 || location.pathname.indexOf("/grammar") >= 0 ? "" : "hidden-visible";
         return (
             <nav>
                 <div className={`float-left ${hiddenVisible}`}>

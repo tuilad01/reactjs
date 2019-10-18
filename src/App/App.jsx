@@ -13,6 +13,7 @@ import NavMenu from '../menu/menu';
 import Footer from '../footer/footer';
 import Dashboard from "../dashboard/dashboard";
 import Learn from "../learn/learn";
+import GrammarTense from "../grammar-tense/grammar-tense";
 import Notfound from "../notfound/notfound";
 import SpinnerLoading from "../spinner-loading/spinner-loading";
 
@@ -278,6 +279,7 @@ class App extends Component {
             <Switch>
               <Route exact path="/" component={Dashboard} />
               <Route exact path="/learn/:id" component={Learn} />
+              <Route exact path="/grammar" component={GrammarTense} />
               <Route component={Notfound} />
             </Switch>
             {this.state.isShowMenu ? <NavMenu /> : ""}

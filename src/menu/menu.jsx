@@ -26,6 +26,7 @@ class Menu extends Component {
                     </div>
                     <ul>
                         <li><a href="/">Home</a></li>
+                        <li><a href="/grammar">Grammar</a></li>
                         <li><a href="https://tuilad01.github.io/#/word">Word</a></li>
                         <li><a href="https://tuilad01.github.io/#/group">Group</a></li>
                         <li><a href="#clearcache" onClick={e => this.clearCache(e)}>Clear cache</a></li>
