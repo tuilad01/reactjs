@@ -161,7 +161,7 @@ class App extends Component {
     const localGroups = localStorageUtil.getArray(config.localStorage.groups);
 
     if (localGroups.length <= 0) {
-      fetch(`${config.apiUrl}/group`)
+      fetch(`${config.apiUrl}/group/all`)
         .then(res => res.json())
         .then(result => {
           localStorageUtil.set(config.localStorage.groups, result);

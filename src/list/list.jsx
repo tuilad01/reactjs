@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import './list.css';
 import { useSwipeable, Swipeable } from 'react-swipeable';
 
-import { mergeArray, splitByArray } from './../arrayUtility';
 import localStorageUtility from '../localStorageUtility';
 import config from '../config';
 
