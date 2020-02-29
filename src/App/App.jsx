@@ -64,11 +64,54 @@ class App extends Component {
           arrKeyNotFound.push(group._id);
           continue;
         }
+        // If performance is slowest. Should unblock blow comment. Just update group when add new or delete a word.
+        //if (groupNew.words.length === group.words.length) continue;
 
-        if (groupNew.words.length === group.words.length) continue;
+        // Word not found in group local
+        group.words.filter(_ => !groupNew.words.find(__ => __._id === _._id)).map(word => {
+          group.words = group.words.filter(_ => _._id !== word._id);
+          group.state1 = group.state1.filter(_ => _._id !== word._id);
+          group.state2 = group.state2.filter(_ => _._id !== word._id);
+          group.state3 = group.state3.filter(_ => _._id !== word._id);
+          return word;
+        });
+
+        // Update Word change mean and name
+        group.words.map(word => {
+          const wordNew = groupNew.words.find(_ => _._id === word._id);
+          if (!wordNew) return word;
+
+          word.name = wordNew.name;
+          word.mean = wordNew.mean;
+
+          const wordIndexInState1 = group.state1.findIndex(_ => _._id === word._id);
+          if (wordIndexInState1 >= 0) {
+            group.state1[wordIndexInState1].name = wordNew.name;
+            group.state1[wordIndexInState1].mean = wordNew.mean;
+          } else {
+            const wordIndexInState2 = group.state2.findIndex(_ => _._id === word._id);
+            if (wordIndexInState2 >= 0) {
+              group.state2[wordIndexInState2].name = wordNew.name;
+              group.state2[wordIndexInState2].mean = wordNew.mean;
+            } else {
+              const wordIndexInState3 = group.state3.findIndex(_ => _._id === word._id);
+              if (wordIndexInState3 >= 0) {
+                group.state3[wordIndexInState3].name = wordNew.name;
+                group.state3[wordIndexInState3].mean = wordNew.mean; 
+              } 
+            }
+          }
+
+          return word;
+        });
 
         // New word in group
         groupNew.words.filter(_ => !group.words.find(__ => __._id === _._id)).map(word => {
+          group.words.push({
+            _id: word._id,
+            name: word.name,
+            mean: word.mean,
+          })
           group.state1.push({
             _id: word._id,
             name: word.name,
@@ -78,13 +121,7 @@ class App extends Component {
           });
           return word;
         });
-        // Word not found in group local
-        group.words.filter(_ => !groupNew.words.find(__ => __._id === _._id)).map(word => {
-          group.state1 = group.state1.filter(_ => _._id !== word._id);
-          group.state2 = group.state2.filter(_ => _._id !== word._id);
-          group.state3 = group.state3.filter(_ => _._id !== word._id);
-          return word;
-        });
+        
 
         group.words = groupNew.words;
         group.percent = Math.round((group.state3.length * 100) / group.words.length);
