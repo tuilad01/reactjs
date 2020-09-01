@@ -41,11 +41,11 @@ class Learn extends Component {
     }
 
     callPinGroup() {        
-        const isPin = this.list.current.pinGroup();
+        const priority = this.list.current.pinGroup();
         this.setState(state => ({
             data: {
                 ...state.data,
-                isPin: isPin
+                priority: priority
             }            
         }))
     }
@@ -74,7 +74,7 @@ class Learn extends Component {
         } else {
             return (
                 <div>
-                    <NavControl onClickShuffle={this.callShuffle.bind(this)} onClickPinGroup={this.callPinGroup.bind(this)} onClickNext={this.callNext.bind(this)} state={this.state.data.state} isPin={this.state.data.isPin}/>
+                    <NavControl onClickShuffle={this.callShuffle.bind(this)} onClickPinGroup={this.callPinGroup.bind(this)} onClickNext={this.callNext.bind(this)} state={this.state.data.state} priority={this.state.data.priority}/>
                     <List ref={this.list} data={data} onClickChangeState={this.callChangeState.bind(this)}/>
                 </div>
             );

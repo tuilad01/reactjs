@@ -24,6 +24,10 @@ dataAccess.getGroupLocal = function () {
   return localStorageUtility.getArray(config.localStorage.groups);
 }
 
+dataAccess.getRemindGroupDate = function () {
+  return localStorageUtility.getDate(config.localStorage.remindGroupDate);
+}
+
 dataAccess.getNumberWordRemember = function () {
   let number = 0;
   const learnLocal = dataAccess.getLearnLocal();
@@ -134,12 +138,11 @@ dataAccess.getGroup = async function () {
   return []
 }
 
-
 dataAccess.getTotalNumberWord = async function () {
   try {
     const localWords = dataAccess.getWordLocal()
 
-    if (!localWords) {
+    if (!localWords.count) {
       const result = await dataAccess.getTotalNumberWordServer()
 
       if (result.isOk) {
@@ -168,38 +171,48 @@ dataAccess.updateLearnLocal = function (groups) {
     if (!learnLocal) return false
 
     const learnLocalGroupKeys = Object.keys(learnLocal)
-    // Remove group in learn local
-    for (let i = 0; i < groups.length; i++) {
-      const { _id, name, description, words } = groups[i];
+    const groupIds = groups.map(_ => _._id)
+    const objNewGroupLearnLocal = {}
 
-      // Remove group nonexist
-      if (learnLocalGroupKeys.indexOf(_id) === -1) {
-        if (learnLocal[_id]) {
-          delete learnLocal[_id]          
-        }
+    // Remove group in learn local
+    if (learnLocal[config.localStorage.forgetGroup]) delete learnLocal[config.localStorage.forgetGroup]
+    if (learnLocal[config.localStorage.similarGroup]) delete learnLocal[config.localStorage.similarGroup]
+
+    learnLocalGroupKeys.forEach(id => {
+      if (groupIds.indexOf(id) === -1)
+        delete learnLocal[id]
+    })
+
+    for (let i = 0; i < groups.length; i++) {
+      const { _id, name, description, words, createdAt } = groups[i];
+
+      // Create group learn local for new group
+      if (!learnLocal[_id]) {
+        const newGroupLearnLocal = dataAccess.createModelGroupLearnById(_id, name, description, words, createdAt, dataAccess.Priorities.Default)
+        objNewGroupLearnLocal[_id] = newGroupLearnLocal
         continue
       }
 
       let { state1, state2, state3 } = learnLocal[_id]
       const wordIds = learnLocal[_id].words.map(_ => _._id)
+      const newWordIds = words.map(_ => _._id)
 
       // Remove and update words group of learn local
-      state1 = _removeAndUpdateWordInState(state1)
-      state2 = _removeAndUpdateWordInState(state2)
-      state3 = _removeAndUpdateWordInState(state3)
+      state1 = _removeAndUpdateWordInState(state1, words, newWordIds)
+      state2 = _removeAndUpdateWordInState(state2, words, newWordIds)
+      state3 = _removeAndUpdateWordInState(state3, words, newWordIds)
 
       // Add new words into state1 group of learn local
       const newWords = words
         .filter(_ => wordIds.indexOf(_._id) === -1)
         .map(word => dataAccess.createModelWordLearn(word))
-      state1 = [...state1, newWords]
+      state1 = [...state1, ...newWords]
 
       // Update all into group of learn local
       learnLocal[_id] = { ...learnLocal[_id], name, description, words, state1, state2, state3 }
     }
-
     // Store learn local
-    dataAccess.setLearnLocal(learnLocal)
+    dataAccess.setLearnLocal({ ...learnLocal, ...objNewGroupLearnLocal })
   } catch (error) {
     console.error(error.message)
     return false
@@ -220,7 +233,7 @@ dataAccess.createModelWordLearn = (word) => {
   }
 }
 
-dataAccess.createModelGroupLearn = () => {
+dataAccess.createModelGroupLearn = (priority) => {
   return {
     _id: '',
     name: '',
@@ -231,38 +244,154 @@ dataAccess.createModelGroupLearn = () => {
     state2: [],
     state3: [],
     percent: 1,
-    learnNumberTimes: 0
+    learnNumberTimes: 0,
+    priority: priority
   }
 }
 
-dataAccess.createSimilarGroup = function () {  
-  let learnLocal = dataAccess.getLearnLocal()
-  if (!learnLocal || learnLocal[config.localStorage.similarGroup]) {
+dataAccess.createSimilarGroup = function () {
+  try {
+    let learnLocal = dataAccess.getLearnLocal()
+    if (!learnLocal || learnLocal[config.localStorage.similarGroup]) {
+      return false
+    }
+
+    const similarGroup = dataAccess.createModelGroupLearn(dataAccess.Priorities.ForgetOrSimilarGroup)
+    similarGroup._id = config.localStorage.similarGroup
+    similarGroup.name = 'Similar words'
+    similarGroup.description = 'Similar words'
+
+    learnLocal[config.localStorage.similarGroup] = similarGroup
+    dataAccess.setLearnLocal(learnLocal)
+  } catch (error) {
+    console.error(error.message)
     return false
   }
 
-  const similarGroup = dataAccess.createModelGroupLearn()
-  similarGroup._id = config.localStorage.similarGroup
-  similarGroup.name = 'Similar words'
-  similarGroup.description = 'Similar words'
-
-  learnLocal[config.localStorage.similarGroup] = similarGroup
-  dataAccess.setLearnLocal(learnLocal)
+  return true
 }
 
 dataAccess.createForgetGroup = function () {
-  let learnLocal = dataAccess.getLearnLocal()
-  if (!learnLocal || learnLocal[config.localStorage.forgetGroup]) {
+  try {
+    let learnLocal = dataAccess.getLearnLocal()
+    if (!learnLocal || learnLocal[config.localStorage.forgetGroup]) {
+      return false
+    }
+
+    const forgetGroup = dataAccess.createModelGroupLearn(dataAccess.Priorities.ForgetOrSimilarGroup)
+    forgetGroup._id = config.localStorage.forgetGroup
+    forgetGroup.name = 'Forget words'
+    forgetGroup.description = 'Forget words'
+
+    learnLocal[config.localStorage.forgetGroup] = forgetGroup
+    dataAccess.setLearnLocal(learnLocal)
+  } catch (error) {
+    console.log(error.message)
     return false
   }
 
-  const forgetGroup = dataAccess.createModelGroupLearn()
-  forgetGroup._id = config.localStorage.forgetGroup
-  forgetGroup.name = 'Forget words'
-  forgetGroup.description = 'Forget words'
+  return true
+}
 
-  learnLocal[config.localStorage.similarGroup] = forgetGroup
-  dataAccess.setLearnLocal(learnLocal)
+dataAccess.addWordToForgetGroup = function () {
+  const learnLocal = dataAccess.getLearnLocal()
+  try {
+    const forgetGroup = learnLocal[config.localStorage.forgetGroup]
+    let wordsForgetGroup = [];
+    for (const key in learnLocal) {
+      if (
+        key === config.localStorage.similarGroup ||
+        key === config.localStorage.forgetGroup
+      )
+        continue;
+
+      if (learnLocal.hasOwnProperty(key)) {
+        const group = learnLocal[key];
+        wordsForgetGroup = [...wordsForgetGroup, ...group.state1];
+      }
+    }
+
+    forgetGroup.words = wordsForgetGroup;
+    forgetGroup.state1 = wordsForgetGroup;
+    forgetGroup.state2 = []
+    forgetGroup.state3 = []
+    forgetGroup.state = 1
+
+    learnLocal[config.localStorage.forgetGroup] = forgetGroup
+    dataAccess.setLearnLocal(learnLocal)
+  } catch (error) {
+    console.log(error.message)
+    return false
+  }
+
+  return learnLocal
+}
+
+dataAccess.createModelGroupLearnById = function (id, name, description, words, createdAt, priority) {
+  return {
+    _id: id,
+    name: name,
+    description: description,
+    words: words || [],
+    createdAt: createdAt,
+    state: 1,
+    state1: words || [],
+    state2: [],
+    state3: [],
+    percent: 1,
+    learnNumberTimes: 0,
+    priority: priority
+  }
+}
+
+dataAccess.sortByPriority = (arrLearnLocal) => {
+  return arrLearnLocal.sort((a, b) => {
+    return b.priority - a.priority
+  })
+}
+
+dataAccess.remindGroup = () => {
+  const remindGroupDate = dataAccess.getRemindGroupDate()
+  const now = new Date()
+  const today = new Date(now.setHours(0, 0, 0, 0))
+
+  if (remindGroupDate < today) {
+    const learnLocal = dataAccess.getLearnLocal()
+    if (learnLocal) {
+      const arrLearnLocal = Object.values(learnLocal)
+
+      const learnedGroup = arrLearnLocal.filter(group => {
+        if (group.lastLearnAt) {
+          if (group.priority === dataAccess.Priorities.Default) {
+            return true
+          } else if (group.priority === dataAccess.Priorities.RemindGroup) {
+            // update priority
+            group.priority = dataAccess.Priorities.Default
+            return true
+          }
+        }
+        return false
+      })
+
+      learnedGroup.sort((a, b) => {
+        return new Date(a.lastLearnAt) - new Date(b.lastLearnAt)
+      })
+
+      // get 10 group
+      learnedGroup.slice(0, 10).forEach(group => {
+        learnLocal[group._id].priority = dataAccess.Priorities.RemindGroup
+      })
+
+      dataAccess.setLearnLocal(learnLocal)
+    }
+  }
+}
+
+dataAccess.Priorities = {
+  ForgetOrSimilarGroup: 9999,
+  Pinned: 555,
+  RemindGroup: 222,
+  Default: 0,
 }
 
 // Private functions

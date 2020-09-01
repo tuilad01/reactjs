@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import dataAccess from '../dataAccess';
 
 class NavControl extends Component {
     constructor(props) {
@@ -15,8 +16,8 @@ class NavControl extends Component {
       }
 
     render() {        
-        const pinIcon = this.props.isPin ? 'clear' : 'warning'
-        const pinText = this.props.isPin ? 'UnPin' : 'Pin'
+        const pinIcon = this.props.priority == dataAccess.Priorities.Pinned ? 'clear' : 'warning'
+        const pinText = this.props.priority == dataAccess.Priorities.Pinned ? 'UnPin' : 'Pin'
         return (
             <div className="nav-control">
                 <button className="button-icon" onClick={this.props.onClickShuffle}>

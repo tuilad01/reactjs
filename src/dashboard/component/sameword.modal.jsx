@@ -130,7 +130,7 @@ class SameWordModal extends Component {
 
     localStorageUtility.set(config.localStorage.learn, this.learnLocal);
 
-    this.props.onChange();
+    this.props.onChange(this.learnLocal);
     this.props.onCloseModal();
   };
 

@@ -20,82 +20,38 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      groupFetch: {
-        error: null,
-        isLoaded: false
-      },
-      wordFetch: {
-        error: null,
-        isLoaded: false,
-      },
       isShowMenu: false,
       scrollTop: 0
     };
-
-    this.learnLocal = dataAccess.getLearnLocal()
   }
 
   componentDidMount() {
-    this.initLocalData();
-
-    window.addEventListener('scroll', this.handleScroll.bind(this));
+    
   }
 
   componentWillUnmount() {
-    window.removeEventListener('scroll', this.handleScroll.bind(this));
   }
 
   render() {
-    const { groupFetch, wordFetch } = this.state;
+    return (
+      <Router>
+        <div>
+          <Nav onClickShowMenu={this.callOpenMenu.bind(this)} />
+          <Switch>
+            <Route exact path="/" component={Dashboard} />
+            <Route exact path="/learn/:id" component={Learn} />
+            <Route exact path="/grammar" component={GrammarTense} />
+            <Route component={Notfound} />
+          </Switch>
+          {this.state.isShowMenu ? <NavMenu /> : ""}
 
-    if (groupFetch.error || wordFetch.error) {
-      return (
-        <section className="flex-center color-red">
-          <p>Error fetch group: {groupFetch.error}</p>
-          <p>Error fetch word: {wordFetch.error}</p>
-        </section>
-      );
-    }
-    else if (!groupFetch.isLoaded || !wordFetch.isLoaded) {
-      return (
-        <section>
-          <div className="flex-center">
-            <SpinnerLoading />
-          </div>
-          <h1 className="color-white text-center">Initializing System, Please Wait For Minutes!</h1>
-        </section>
-      );
-    } else {
-      return (
-        <Router>
-          <div>
-            <Nav onClickShowMenu={this.callOpenMenu.bind(this)} />
-            <Switch>
-              <Route exact path="/" component={Dashboard} />
-              <Route exact path="/learn/:id" component={Learn} />
-              <Route exact path="/grammar" component={GrammarTense} />
-              <Route component={Notfound} />
-            </Switch>
-            {this.state.isShowMenu ? <NavMenu /> : ""}
+          <Footer />
 
-            <Footer />
-
-            {this.scrollTop()}
-          </div>
-        </Router>
-      );
-    }
-  }
-
-  initLocalData() {
-    dataAccess.getGroup()
-    this.setState(state => { state.groupFetch.isLoaded = true; return state });
-    dataAccess.getTotalNumberWord()
-    this.setState(state => { state.wordFetch.isLoaded = true; return state });
-
-    dataAccess.createSimilarGroup()
-    dataAccess.createForgetGroup()
-  }
+          {this.scrollTop()}
+        </div>
+      </Router>
+    );
+  }  
 
   callOpenMenu() {
     this.setState(state => {

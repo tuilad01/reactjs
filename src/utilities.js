@@ -41,6 +41,23 @@ utilities.getDayOfWeek = function (number) {
     return (now - time) / 1000 / 60 / 60 / 24
   };
 
+  utilities.setColorRow = function (date) {
+    if (typeof date !== 'number') return "";
+
+    const minute = utilities.getMin(date);
+    const hour = utilities.getHour(date);
+    const day = utilities.getDay(date);
+    if (minute < 5) {
+      return "learn-recent";
+    } else if (hour < 1) {
+      return "learn-recent-1hour";
+    } else if (day > 1) {
+      return "learn-recent-1day";
+    } else {
+      return "";
+    }
+  }
+
   
 
 export default utilities

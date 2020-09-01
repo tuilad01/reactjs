@@ -2,6 +2,17 @@ const get = (key) => {
     return localStorage.getItem(key);
 }
 
+const getDate = (key) => {
+    const strDate = localStorage.getItem(key);
+    if (strDate) {
+        return new Date(strDate)
+    }
+    
+    const now = new Date()
+    const yesterday = now.setDate(now.getDate() - 1)
+    return yesterday
+}
+
 const getArray = (key) => {
     const strLocal = get(key);
     if (!strLocal) return [];
@@ -24,4 +35,4 @@ const clear = () => {
     localStorage.clear();
 }
 
-export default { get, getArray, set, remove, clear };
+export default { get, getArray, set, remove, clear, getDate };

@@ -5,6 +5,7 @@ import { useSwipeable, Swipeable } from 'react-swipeable';
 
 import localStorageUtility from '../localStorageUtility';
 import config from '../config';
+import dataAccess from '../dataAccess';
 
 class List extends Component {
   constructor(props, ) {
@@ -120,21 +121,23 @@ class List extends Component {
   }
 
   pinGroup() {
-    let result = false;
-    const strLearnLocal = localStorageUtility.get(config.localStorage.learn);
-    if (strLearnLocal) {
-      const learnLocal = JSON.parse(strLearnLocal);
+    //const strLearnLocal = localStorageUtility.get(config.localStorage.learn);
+    const learnLocal = dataAccess.getLearnLocal()
+    if (learnLocal && learnLocal[this.props.data._id]) {
       const group = learnLocal[this.props.data._id];
-      if (group.isPin === undefined) {
-        group.isPin = true
+      if (group._id === config.localStorage.forgetGroup || group._id === config.localStorage.similarGroup) return dataAccess.Priorities.ForgetOrSimilarGroup
+
+      if (group.priority === dataAccess.Priorities.Default) {
+        group.priority = dataAccess.Priorities.Pinned        
       } else {
-        group.isPin = !group.isPin
+        group.priority = dataAccess.Priorities.Default
       }
-      localStorageUtility.set(config.localStorage.learn, learnLocal);
-      result = group.isPin
+      dataAccess.setLearnLocal(learnLocal)
+      return group.priority
     }
-    
-    return result
+
+    console.error("Learn local or learn group local not found")
+    return dataAccess.Priorities.Default
   }
 
   save() {
