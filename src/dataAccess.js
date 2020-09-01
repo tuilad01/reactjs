@@ -24,7 +24,7 @@ dataAccess.getGroupLocal = function () {
   return localStorageUtility.getArray(config.localStorage.groups);
 }
 
-dataAccess.getRemindGroupDate = function () {
+dataAccess.getRemindGroupDateLocal = function () {
   return localStorageUtility.getDate(config.localStorage.remindGroupDate);
 }
 
@@ -74,6 +74,15 @@ dataAccess.setWordLocal = function (totalNumber) {
   if (totalNumber < 0) throw new Error("function [setWordLocal] Error: invalid parameters")
   try {
     localStorageUtility.set(config.localStorage.words, totalNumber);
+  } catch (error) {
+    console.error(error.message)
+  }
+}
+
+dataAccess.setRemindGroupDateLocal = function (date) {
+  if (!date) throw new Error("function [setRemindGroupDateLocal] Error: invalid parameters")
+  try {
+    localStorageUtility.set(config.localStorage.remindGroupDate, date);
   } catch (error) {
     console.error(error.message)
   }
@@ -351,7 +360,7 @@ dataAccess.sortByPriority = (arrLearnLocal) => {
 }
 
 dataAccess.remindGroup = () => {
-  const remindGroupDate = dataAccess.getRemindGroupDate()
+  const remindGroupDate = dataAccess.getRemindGroupDateLocal()
   const now = new Date()
   const today = new Date(now.setHours(0, 0, 0, 0))
 
@@ -383,7 +392,8 @@ dataAccess.remindGroup = () => {
       })
 
       dataAccess.setLearnLocal(learnLocal)
-    }
+      dataAccess.setRemindGroupDateLocal(now.getTime())
+    }    
   }
 }
 
