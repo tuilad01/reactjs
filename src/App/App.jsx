@@ -1,9 +1,6 @@
 import React, { Component } from 'react';
 import './App.css';
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
-
-import dataAccess from '../dataAccess';
-
 // import component 
 import Nav from '../nav/nav';
 // import NavControl from '../nav-control/nav-control';
@@ -14,7 +11,6 @@ import Dashboard from "../dashboard/dashboard";
 import Learn from "../learn/learn";
 import GrammarTense from "../grammar-tense/grammar-tense";
 import Notfound from "../notfound/notfound";
-import SpinnerLoading from "../spinner-loading/spinner-loading";
 
 class App extends Component {
   constructor(props) {

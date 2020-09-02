@@ -52,6 +52,17 @@ dataAccess.getWordHasGroup = function () {
   return words.flat();
 }
 
+dataAccess.isUpdateVersion = function () {
+  const currentVersion = +localStorageUtility.get(config.localStorage.updateVersionId)
+  const newVersion = config.localStorage.updateVersionNumber // required
+
+  if (currentVersion && newVersion && currentVersion >= newVersion) {
+    return false
+  }
+
+  return true
+}
+
 dataAccess.setLearnLocal = function (learnLocal) {
   if (!learnLocal) throw new Error("function [setLearnLocal] Error: invalid parameters")
   try {
@@ -83,6 +94,15 @@ dataAccess.setRemindGroupDateLocal = function (date) {
   if (!date) throw new Error("function [setRemindGroupDateLocal] Error: invalid parameters")
   try {
     localStorageUtility.set(config.localStorage.remindGroupDate, date);
+  } catch (error) {
+    console.error(error.message)
+  }
+}
+
+dataAccess.setUpdateVersionNumberLocal = function (versionNumber) {
+  if (!versionNumber) throw new Error("function [setUpdateVersionNumberLocal] Error: invalid parameters")
+  try {
+    localStorageUtility.set(config.localStorage.updateVersionId, versionNumber);
   } catch (error) {
     console.error(error.message)
   }
@@ -393,7 +413,35 @@ dataAccess.remindGroup = () => {
 
       dataAccess.setLearnLocal(learnLocal)
       dataAccess.setRemindGroupDateLocal(now.getTime())
-    }    
+    }
+  }
+}
+
+dataAccess.updateVersion = () => {
+  const isUpdateVersion = dataAccess.isUpdateVersion()
+
+  // update priority version 2020090200
+  if (isUpdateVersion) {
+    if (config.localStorage.updateVersionNumber === 2020090200) {
+      const learnLocal = dataAccess.getLearnLocal()
+      for (const key in learnLocal) {
+        if (learnLocal.hasOwnProperty(key)) {
+          const group = learnLocal[key];
+
+          if (!group.priority) {
+            if (group._id !== config.localStorage.forgetGroup || group._id !== config.localStorage.similarGroup) {
+              if (!group.isPin) {
+                group.priority = dataAccess.Priorities.Default
+              } else {
+                group.priority = dataAccess.Priorities.Pinned
+              }
+            }
+          }
+        }
+      }
+      dataAccess.setLearnLocal(learnLocal)
+      dataAccess.setUpdateVersionNumberLocal(config.localStorage.updateVersionNumber)
+    }
   }
 }
 

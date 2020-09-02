@@ -3,7 +3,6 @@ import GroupName from "./group-name"
 import GroupTypeIconAndTotalWords from "./group-type-icon-total-words"
 
 import utilities from "./../../utilities"
-import dataAccess from "./../../dataAccess"
 
 function Row({ group }) {
     const { _id, name, description, words, percent, learnNumberTimes, lastLearnAt, priority } = group

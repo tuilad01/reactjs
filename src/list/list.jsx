@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import './list.css';
-import { useSwipeable, Swipeable } from 'react-swipeable';
+import { Swipeable } from 'react-swipeable';
 
 import localStorageUtility from '../localStorageUtility';
 import config from '../config';
@@ -162,8 +162,6 @@ class List extends Component {
 
   next() {
     let { state, state1, state2, state3, data } = this.state;
-    const propId = "_id";
-    const propDisplay = "display";
 
     switch (state) {
       case 1:

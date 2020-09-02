@@ -62,6 +62,7 @@ class Dashboard extends Component {
     await dataAccess.getTotalNumberWord()
     
     dataAccess.remindGroup()
+    dataAccess.updateVersion()
     const learnLocal = dataAccess.getLearnLocal()
     this.setState({isLoaded: true, learnLocal: learnLocal})
 

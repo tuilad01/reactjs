@@ -16,8 +16,8 @@ class NavControl extends Component {
       }
 
     render() {        
-        const pinIcon = this.props.priority == dataAccess.Priorities.Pinned ? 'clear' : 'warning'
-        const pinText = this.props.priority == dataAccess.Priorities.Pinned ? 'UnPin' : 'Pin'
+        const pinIcon = this.props.priority === dataAccess.Priorities.Pinned ? 'clear' : 'warning'
+        const pinText = this.props.priority === dataAccess.Priorities.Pinned ? 'UnPin' : 'Pin'
         return (
             <div className="nav-control">
                 <button className="button-icon" onClick={this.props.onClickShuffle}>
