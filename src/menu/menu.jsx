@@ -20,6 +20,7 @@ class Menu extends Component {
         event.preventDefault();
         localStorageUtility.remove(config.localStorage.groups);
         localStorageUtility.remove(config.localStorage.words);
+        localStorageUtility.remove(config.localStorage.remindGroupDate);
         window.location.reload();
     }
 
