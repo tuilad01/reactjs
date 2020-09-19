@@ -5,12 +5,13 @@ const get = (key) => {
 const getDate = (key) => {
     const strDate = localStorage.getItem(key);
     if (strDate) {
-        return new Date(strDate)
+        return new Date(+strDate)
     }
     
-    const now = new Date()
-    const yesterday = now.setDate(now.getDate() - 1)
-    return yesterday
+    // const now = new Date()
+    // const yesterday = now.setDate(now.getDate() - 1)
+    // return yesterday
+    return null
 }
 
 const getArray = (key) => {

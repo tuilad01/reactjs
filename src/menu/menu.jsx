@@ -13,7 +13,7 @@ import SpinnerLoading from "../spinner-loading/spinner-loading";
 class Menu extends Component {
 
     state = {
-        loading: false
+        loading: false        
     }
 
     clearCache(event) {
@@ -106,9 +106,15 @@ class Menu extends Component {
         })
     }
 
+    close(event) {
+        event.preventDefault();
+        this.props.onClose();
+    }
+
 
     render() {
         const { loading } = this.state
+        const { isShow } = this.props
         if (loading) {
             return (
                 <section className="spinner-loading">
@@ -118,25 +124,31 @@ class Menu extends Component {
                 </section>
             )
         } else {
-            return (
-                <section className="full-menu">
-                    <main className="container">
-                        <div className="split-horizon">
-                            <a href="#menupanel" className="title-menu">Menu panel</a>
-                        </div>
-                        <ul>
-                            <li><a href="/">Home</a></li>
-                            <li><a href="/grammar">Grammar</a></li>
-                            <li><a href="https://tuilad01.github.io/#/word">Word</a></li>
-                            <li><a href="https://tuilad01.github.io/#/group">Group</a></li>
-                            <li><a href="#clearcache" onClick={e => this.clearCache(e)}>Clear cache</a></li>
-                            <li><a href="#archiveit" onClick={e => this.archiveIt(e)}>Archive it</a></li>
-                            <li><a href="#syncdata" onClick={e => this.syncIt(e)}>Sync it</a></li>
-
-                        </ul>
-                    </main>
-                </section>
-            );
+            if (isShow) {
+                return (
+                    <section className="full-menu">
+                        <main className="container">
+                            <div className="split-horizon">
+                                <a href="#menupanel" className="title-menu">Menu panel</a>
+                            </div>
+                            <ul>
+                                <li><a href="/">Home</a></li>
+                                <li><a href="/grammar">Grammar</a></li>
+                                <li><a href="https://tuilad01.github.io/#/word">Word</a></li>
+                                <li><a href="https://tuilad01.github.io/#/group">Group</a></li>
+                                <li><a href="/learntracking">Learn tracking</a></li>
+                                <li><a href="#clearcache" onClick={e => this.clearCache(e)}>Clear cache</a></li>
+                                <li><a href="#archiveit" onClick={e => this.archiveIt(e)}>Archive it</a></li>
+                                <li><a href="#syncdata" onClick={e => this.syncIt(e)}>Sync it</a></li>
+                                <li><a href="#close" onClick={e => this.close(e)} >Close</a></li>
+                            </ul>
+                        </main>
+                    </section>
+                );                
+            } else {
+                return (<div></div>)
+            }
+            
         }
     }
 }

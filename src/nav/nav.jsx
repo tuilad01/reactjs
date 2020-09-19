@@ -10,7 +10,7 @@ class Nav extends Component {
 
         const hiddenVisible = location.pathname.indexOf("/learn") >= 0 || location.pathname.indexOf("/grammar") >= 0 ? "" : "hidden-visible";
         return (
-            <nav>
+            <nav class="nav-app">
                 <div className={`float-left ${hiddenVisible}`}>
                     <i className="material-icons nav-icon icon-clickable" onClick={history.goBack}>
                         keyboard_arrow_left

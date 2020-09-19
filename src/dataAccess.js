@@ -3,6 +3,28 @@ import config from "./config";
 
 const dataAccess = {};
 
+const trackingSectors = [
+  {
+    id: 1,
+    name: "Thinkself",
+    color: "#d63031",
+    icon: "psychology"
+  },
+  {
+    id: 2,
+    name: "Listening",
+    color: "#fdcb6e",
+    icon: "headset"
+  },
+  {
+    id: 3,
+    name: "Reading",
+    color: "#74b9ff",
+    icon: "book"
+  }
+
+]
+
 dataAccess.getLearnLocal = function () {
   let learnLocal = {};
   const strLearnLocal = localStorageUtility.get(config.localStorage.learn);
@@ -50,6 +72,15 @@ dataAccess.getWordHasGroup = function () {
   const words = groups.map(d => d.words);
 
   return words.flat();
+}
+
+dataAccess.getTrackingLocal = function () {
+  let tracking = {};
+  const strTracking = localStorageUtility.get(config.localStorage.tracking);
+  if (strTracking) {
+    tracking = JSON.parse(strTracking);
+  }
+  return tracking;
 }
 
 dataAccess.isUpdateVersion = function () {
@@ -103,6 +134,15 @@ dataAccess.setUpdateVersionNumberLocal = function (versionNumber) {
   if (!versionNumber) throw new Error("function [setUpdateVersionNumberLocal] Error: invalid parameters")
   try {
     localStorageUtility.set(config.localStorage.updateVersionId, versionNumber);
+  } catch (error) {
+    console.error(error.message)
+  }
+}
+
+dataAccess.setTrackingLocal = function (tracking) {
+  if (!tracking) throw new Error("function [setTrackingLocal] Error: invalid parameters")
+  try {
+    localStorageUtility.set(config.localStorage.tracking, tracking);
   } catch (error) {
     console.error(error.message)
   }
@@ -192,6 +232,10 @@ dataAccess.getTotalNumberWord = async function () {
   return 0
 }
 
+dataAccess.getTrackingBarSectorsLocal = function () {
+  return trackingSectors
+}
+
 dataAccess.updateLearnLocal = function (groups) {
   if (!groups) throw new Error("function [updateLearnLocal] Error: invaild parameters")
 
@@ -248,6 +292,61 @@ dataAccess.updateLearnLocal = function (groups) {
   }
 
   return true
+}
+
+dataAccess.updateTracking = function (arrTrackingSector) {
+  try {
+    const now = new Date()
+    const yesterday = new Date(new Date().setHours(0, 0, 0, 0))
+    yesterday.setDate(now.getDate() - 1)
+
+    const tracking = dataAccess.getTrackingLocal()
+    const id = `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}`
+    const yesterdayId = `${yesterday.getFullYear()}-${yesterday.getMonth() + 1}-${yesterday.getDate()}`
+
+    
+    if (tracking.consecutiveDays === undefined) {
+      tracking.consecutiveDays = 0
+    }
+
+    if (tracking.listenMinutes) {
+      tracking.listenMinutes = 0
+    }
+
+    // update consecutive days and listening minute
+    if (tracking && tracking.updatedAt === yesterday.getTime()) {
+      tracking.consecutiveDays = tracking.consecutiveDays ? tracking.consecutiveDays += 1 : 1
+
+      // update whole time listening (listening id = 2)
+      const yesterdayTracking = tracking[yesterdayId]
+      const listeningMinutes = yesterdayTracking.find(_ => _.id === 2)
+      tracking.listenMinutes = tracking.listenMinutes || tracking.listenMinutes === 0 ? tracking.listenMinutes += listeningMinutes.value : 0
+    }
+
+    // update time
+    tracking.updatedAt = now.getTime()
+
+
+
+    // Update or Create new tracking by date
+    tracking.tracking = tracking.tracking ? tracking.tracking : {} // set object for property if it is undefined    
+    tracking.tracking[id] = arrTrackingSector
+
+    localStorageUtility.set(config.localStorage.tracking, tracking)
+
+    return tracking
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+dataAccess.createModalTrackingSectors = () => {
+  return trackingSectors.map(_ => {
+    return {
+      id: _.id,
+      value: 0
+    }
+  })
 }
 
 dataAccess.createModelWordLearn = (word) => {
@@ -384,7 +483,7 @@ dataAccess.remindGroup = () => {
   const now = new Date()
   const today = new Date(now.setHours(0, 0, 0, 0))
 
-  if (remindGroupDate < today) {
+  if (!remindGroupDate || remindGroupDate < today) {
     const learnLocal = dataAccess.getLearnLocal()
     if (learnLocal) {
       const arrLearnLocal = Object.values(learnLocal)

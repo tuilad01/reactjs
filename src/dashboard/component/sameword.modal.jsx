@@ -217,7 +217,7 @@ class SameWordModal extends Component {
               </label>
 
               <div className="table-responsive">
-                <table>
+                <table class="table--modal">
                   <tbody>
                     <tr>
                       <th>#</th>
@@ -253,7 +253,7 @@ class SameWordModal extends Component {
 
             <div className="content-tab" style={contentGroupStyle}>
               <div className="table-responsive">
-                <table>
+                <table className="table--modal">
                   <tbody>
                     <tr>
                       <th>#</th>

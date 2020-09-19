@@ -10,6 +10,7 @@ import Footer from '../footer/footer';
 import Dashboard from "../dashboard/dashboard";
 import Learn from "../learn/learn";
 import GrammarTense from "../grammar-tense/grammar-tense";
+import LearnTracking from "../learn-tracking/learn-tracking";
 import Notfound from "../notfound/notfound";
 
 class App extends Component {
@@ -22,32 +23,47 @@ class App extends Component {
   }
 
   componentDidMount() {
-    
+
   }
 
   componentWillUnmount() {
   }
 
-  render() {
-    return (
-      <Router>
-        <div>
-          <Nav onClickShowMenu={this.callOpenMenu.bind(this)} />
-          <Switch>
-            <Route exact path="/" component={Dashboard} />
-            <Route exact path="/learn/:id" component={Learn} />
-            <Route exact path="/grammar" component={GrammarTense} />
-            <Route component={Notfound} />
-          </Switch>
-          {this.state.isShowMenu ? <NavMenu /> : ""}
+  render() {    
+    if (window.location && window.location.pathname === "/learntracking") {
+      return (
+        <LearnTracking></LearnTracking>
+      )
+    } else {
+      return (
+        <Router>
+          <div className="wrapper">
+            <Nav onClickShowMenu={this.callOpenMenu.bind(this)} />
+            <Switch>
+              <Route exact path="/" component={Dashboard} />
+              <Route exact path="/learn/:id" component={Learn} />
+              <Route exact path="/grammar" component={GrammarTense} />
+              <Route exact path="/learntracking" component={LearnTracking} />
+              <Route component={Notfound} />
+            </Switch>
+  
+            <NavMenu isShow={this.state.isShowMenu} onClose={this.onChange} />
+  
+            <Footer />
+  
+            {this.scrollTop()}
+          </div>
+        </Router>
+      );
+    }    
+  }
 
-          <Footer />
-
-          {this.scrollTop()}
-        </div>
-      </Router>
-    );
-  }  
+  onChange = () => {
+    this.setState(state => {
+      state.isShowMenu = false
+      return state
+    })
+  }
 
   callOpenMenu() {
     this.setState(state => {
