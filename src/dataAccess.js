@@ -309,7 +309,7 @@ dataAccess.updateTracking = function (arrTrackingSector) {
       tracking.consecutiveDays = 0
     }
 
-    if (tracking.listenMinutes) {
+    if (tracking.listenMinutes === undefined) {
       tracking.listenMinutes = 0
     }
 
