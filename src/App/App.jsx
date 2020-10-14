@@ -29,7 +29,7 @@ class App extends Component {
   componentWillUnmount() {
   }
 
-  render() {    
+  render() {
     if (window.location && window.location.pathname === "/learntracking") {
       return (
         <LearnTracking></LearnTracking>
@@ -39,23 +39,25 @@ class App extends Component {
         <Router>
           <div className="wrapper">
             <Nav onClickShowMenu={this.callOpenMenu.bind(this)} />
-            <Switch>
-              <Route exact path="/" component={Dashboard} />
-              <Route exact path="/learn/:id" component={Learn} />
-              <Route exact path="/grammar" component={GrammarTense} />
-              <Route exact path="/learntracking" component={LearnTracking} />
-              <Route component={Notfound} />
-            </Switch>
-  
+            <div class="switch-content">
+              <Switch>
+                <Route exact path="/" component={Dashboard} />
+                <Route exact path="/learn/:id" component={Learn} />
+                <Route exact path="/grammar" component={GrammarTense} />
+                <Route exact path="/learntracking" component={LearnTracking} />
+                <Route component={Notfound} />
+              </Switch>
+            </div>
+
             <NavMenu isShow={this.state.isShowMenu} onClose={this.onChange} />
-  
+
             <Footer />
-  
+
             {this.scrollTop()}
           </div>
         </Router>
       );
-    }    
+    }
   }
 
   onChange = () => {

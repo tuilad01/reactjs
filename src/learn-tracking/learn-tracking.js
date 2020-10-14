@@ -124,7 +124,7 @@ function LearnTracking() {
     }
 
     return (
-        <div className="container--learn_tracking">
+        <div className="container-learn-tracking">
             <div className="mobile-screen">
                 <section className="banner" style={{ backgroundImage: "url('/banner.jpg')" }}>
                     <nav className="nav-bar">
@@ -160,22 +160,22 @@ function LearnTracking() {
                 </section>
 
                 <section className="task">
-                    <ul className="task-list">
+                    <ul className="task__list">
                         {_barSectors.map(sector => (
-                            <li className="task-item" key={sector.id}>
-                                <div className="thumb-icon">
+                            <li className="task__item" key={sector.id}>
+                                <div className="task__thumb-icon">
                                     <span className="material-icons" style={{ color: sector.color }}>
                                         {sector.icon}
                                     </span>
                                 </div>
-                                <div className="details">
-                                    <p className="description">{sector.name}</p>
-                                    <span className="task-number">+ {state.tracking.find(_ => _.id === sector.id).value}</span>
+                                <div className="task__details">
+                                    <p className="task__description">{sector.name}</p>
+                                    <span className="task__number">+ {state.tracking.find(_ => _.id === sector.id).value}</span>
                                 </div>
 
-                                <div className="up--down__button">
-                                    <div className="up-button" onMouseDown={e => startModifySectorById(e, sector.id, 1)} onMouseUp={e => cancelModifySectorById(e)} onTouchStart={e => startModifySectorById(e, sector.id, 1)} onTouchEnd={e => cancelModifySectorById(e)}></div>
-                                    <div className="down-button" onMouseDown={e => startModifySectorById(e, sector.id, -1)} onMouseUp={e => cancelModifySectorById(e)} onTouchStart={e => startModifySectorById(e, sector.id, -1)} onTouchEnd={e => cancelModifySectorById(e)}></div>
+                                <div className="task__up-down-button">
+                                    <div className="task__up-button" onMouseDown={e => startModifySectorById(e, sector.id, 1)} onMouseUp={e => cancelModifySectorById(e)} onTouchStart={e => startModifySectorById(e, sector.id, 1)} onTouchEnd={e => cancelModifySectorById(e)}></div>
+                                    <div className="task__down-button" onMouseDown={e => startModifySectorById(e, sector.id, -1)} onMouseUp={e => cancelModifySectorById(e)} onTouchStart={e => startModifySectorById(e, sector.id, -1)} onTouchEnd={e => cancelModifySectorById(e)}></div>
                                 </div>
                             </li>
                         ))}

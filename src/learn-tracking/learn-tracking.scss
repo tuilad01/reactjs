@@ -1,4 +1,4 @@
-.container--learn_tracking {
+.container-learn-tracking {
   --bar-height: 30px;
   width: 100%;
   min-height: 100vh;
@@ -116,11 +116,11 @@
   .task {
     padding: 0 20px 0;
 
-    .task-list {
+    .task__list {
       list-style: none;
     }
 
-    .task-item {
+    .task__item {
       display: grid;
       grid-template-columns: 70px 1fr 50px;
       align-items: center;
@@ -132,7 +132,7 @@
       padding: 7px;
     }
 
-    .thumb-icon {
+    .task__thumb-icon {
       display: grid;
       place-content: center;
       width: 56px;
@@ -147,24 +147,24 @@
       
     }
 
-    .details {
+    .task__details {
       color: #666;
 
-      .description {
+      .task__description {
         font-size: 0.9em;
       }
 
-      .task-number {
+      .task__number {
         font-size: 1.2em;
         font-weight: bold;
       }
     }
 
-    .up--down__button {
+    .task__up-down-button {
       display: grid;
       justify-items: right;
 
-      .up-button {
+      .task__up-button {
         width: 0;
         height: 0;
         border-left: 9px solid transparent;
@@ -178,7 +178,7 @@
         }
       }
 
-      .down-button {
+      .task__down-button {
         width: 0;
         height: 0;
         border-left: 9px solid transparent;

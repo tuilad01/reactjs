@@ -32,7 +32,9 @@
   background-color: #2c3e50;
   margin-bottom: 20px;
 }
-
+.switch-content {
+  min-height: 89vh;
+}
 /* Box */
 
 .box-container {
@@ -410,7 +412,7 @@
 .square-container {
   display: flex;
   flex-wrap: wrap;
-  justify-content: center;
+  justify-content: center;  
 }
 
 .square {
@@ -554,9 +556,7 @@
   height: 60px;
 } */
 
-.footer {
-  position: absolute;
-  bottom: 0;
+.footer {  
   height: 40px;
   width: 100%;
   color: #58B19F;
