@@ -41,7 +41,7 @@ function Statistic({onOpenModal, onAddForgetGroup }) {
                           </p>
                     </div>
                 </div>
-                <div>
+                <div class="propress-bar">
                     <div className="number-progress-bar">
                         <span>{`${rememberWordCount}/${wordCount}`}</span>
                     </div>
